@@ -72,7 +72,7 @@
   .shell{
     max-width:560px;
     margin:0 auto;
-    padding:0 20px 80px;
+    padding:0 20px 86px;
     position:relative;
   }
   header.top{
@@ -191,13 +191,32 @@
   .home-btn.gold:hover{filter:brightness(1.06);}
 
   footer.foot{
-    margin-top:44px;
+    position:fixed;
+    left:50%;
+    bottom:0;
+    transform:translateX(-50%);
+    width:min(560px,100%);
+    margin:0;
+    padding:12px 20px;
     text-align:center;
     font-family:'SFMono-Regular',Consolas,'Liberation Mono',monospace;
     font-size:10.5px;
+    line-height:1.35;
     letter-spacing:0.1em;
     color:var(--muted);
     text-transform:uppercase;
+    background:rgba(11,10,8,0.96);
+    border-top:1px solid var(--hairline);
+    backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px);
+    z-index:100;
+  }
+  @media (max-width:420px){
+    footer.foot{
+      padding:11px 12px;
+      font-size:9.5px;
+      letter-spacing:0.07em;
+    }
   }
 
   /* ================= SHARED PAGE HEAD ================= */
