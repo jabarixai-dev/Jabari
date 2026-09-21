@@ -696,16 +696,15 @@ async function loadShopProducts(){
 }
 
   function renderShop(){
-  if(!Array.isArray(SHOP_PRODUCTS) || SHOP_PRODUCTS.length === 0){
-  const list = document.getElementById('shop-list');
-  if(list){
-    list.innerHTML = '<p class="blog-empty">Shop products are unavailable right now.</p>';
-  }
-  return;
-  }
     const list = document.getElementById('shop-list');
-    if(!list || list.dataset.rendered) return;
-    list.dataset.rendered = '1';
+    if(!list) return;
+
+    list.innerHTML = '';
+
+    if(!Array.isArray(SHOP_PRODUCTS) || SHOP_PRODUCTS.length === 0){
+      list.innerHTML = '<p class="blog-empty">Shop products are unavailable right now.</p>';
+      return;
+    }
     SHOP_PRODUCTS.forEach(p => {
       const item = document.createElement('div');
       item.className = 'shop-item';
@@ -1429,11 +1428,13 @@ preview.innerHTML = d.image
     window.scrollTo(0,0);
 
     if(target === 'view-shop'){
-      renderShop();
+      loadShopProducts().then(renderShop);
     }
     if(target === 'view-download'){
       const params = new URLSearchParams(queryPart || '');
-      runDownloadVerification(params.get('ref'), params.get('product'));
+      loadShopProducts().then(() => {
+        runDownloadVerification(params.get('ref'), params.get('product'));
+      });
     }
     if(target === 'view-reviews'){
       loadReviews();
