@@ -1009,17 +1009,16 @@ async function loadShopProducts(){
     msgEl.className = 'review-msg';
 
     try{
-      const body = encodeFormBody({
-        'form-name': 'reviews',
-        name: name,
-        rating: String(selectedRating),
-        message: message,
-        'bot-field': ''
-      });
-      const res = await fetch('/', {
+      const res = await fetch('/.netlify/functions/manage-reviews', {
         method: 'POST',
-        headers: {'Content-Type':'application/x-www-form-urlencoded'},
-        body: body
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({
+          action: 'create',
+          name,
+          rating: selectedRating,
+          message,
+          botField: ''
+        })
       });
       if(res.ok){
         msgEl.textContent = 'Thanks! Your review has been submitted.';

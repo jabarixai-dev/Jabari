@@ -1,0 +1,20 @@
+Reviews no longer use Netlify Forms.
+
+Replace/add:
+1. Root index.html
+2. netlify/functions/manage-reviews.js
+3. netlify/functions/list-submissions.js
+4. reviews/reviews.json
+
+Required env vars:
+GITHUB_TOKEN
+GITHUB_OWNER=jabarixai-dev
+GITHUB_REPO=Jabari
+GITHUB_BRANCH=main
+BLOG_PASSCODE
+
+NETLIFY_ACCESS_TOKEN and NETLIFY_SITE_ID are no longer required for Reviews.
+
+Public reviews are written to reviews/reviews.json through manage-reviews.js.
+The dashboard uses the same file. Hidden reviews remain stored but are not shown publicly.
+Replies are stored inside the same review records.
