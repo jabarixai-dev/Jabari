@@ -1,7 +1,7 @@
 // Reviews remain on Netlify Forms. Blog posts are now stored in GitHub so
 // normal visitors do not need a Netlify Function just to read the Blog.
 const https=require('https');
-const {getPosts}=require('../lib/github-blog');
+const {getPosts}=require('./lib/github-blog');
 
 function apiGet(path,token){return new Promise((resolve,reject)=>{
   const req=https.request({hostname:'api.netlify.com',path,method:'GET',headers:{Authorization:`Bearer ${token}`}},res=>{
