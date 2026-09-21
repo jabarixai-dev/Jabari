@@ -87,7 +87,7 @@ exports.handler = async (event) => {
     }
 
     const items = (subsRes.body || [])
-      .map((s) => ({ data: s.data || {}, created_at: s.created_at }))
+      .map((s) => ({ id: s.id, data: s.data || {}, created_at: s.created_at }))
       .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
     return {
