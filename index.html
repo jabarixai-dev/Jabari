@@ -646,13 +646,6 @@
     <textarea name="message"></textarea>
     <input type="text" name="bot-field" />
   </form>
-  <form name="blog-posts" data-netlify="true" hidden>
-    <input type="text" name="title" />
-    <textarea name="content"></textarea>
-    <input type="url" name="image" />
-    <input type="url" name="video" />
-    <input type="text" name="post-date" />
-  </form>
 
 </div>
 
@@ -940,11 +933,31 @@
     return d.toLocaleDateString(undefined, {year:'numeric',month:'short',day:'numeric'});
   }
 
-  async function fetchBlogPosts(){
-    const res = await fetch('/.netlify/functions/list-submissions?form=blog-posts', {cache:'no-store'});
+  const BLOG_PUBLIC_DATA_URL = 'https://raw.githubusercontent.com/jabarixai-dev/Jabari/main/blog/posts.json';
+
+  async function fetchBlogPosts(options = {}){
+    const admin = !!options.admin;
+    const url = admin
+      ? '/.netlify/functions/list-submissions?form=blog-posts'
+      : BLOG_PUBLIC_DATA_URL + '?t=' + Date.now();
+    const res = await fetch(url, {cache:'no-store'});
     if(!res.ok) throw new Error('Could not load posts');
     const data = await res.json();
-    blogItems = data.items || [];
+    if(admin){
+      blogItems = data.items || [];
+    }else{
+      blogItems = (Array.isArray(data) ? data : []).map(item => ({
+        id: item.id || '',
+        data: {
+          title: item.title || '',
+          content: item.content || '',
+          image: item.image || '',
+          video: item.video || '',
+          'post-date': item.date || ''
+        },
+        created_at: item.updatedAt || item.date || ''
+      }));
+    }
     return blogItems;
   }
 
@@ -1037,7 +1050,7 @@
     msgEl.textContent = 'Loading posts…';
     msgEl.className = 'write-msg';
     try{
-      await fetchBlogPosts();
+      await fetchBlogPosts({admin:true});
       renderAdminPosts();
       msgEl.textContent = 'Posts loaded.';
       msgEl.className = 'write-msg success';
@@ -1090,14 +1103,14 @@
     try{
       const res = await fetch('/.netlify/functions/delete-post', {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({passcode, submissionId:id})
+        body:JSON.stringify({passcode, postId:id})
       });
       if(!res.ok){
         const t = await res.text();
         throw new Error(res.status === 401 ? 'Incorrect passcode.' : t);
       }
       if(editingSubmissionId === id) clearBlogEditor();
-      await fetchBlogPosts();
+      await fetchBlogPosts({admin:true});
       renderAdminPosts();
       renderBlogPosts();
       msgEl.textContent = 'Post deleted.';
@@ -1329,13 +1342,13 @@
       const res = await fetch('/.netlify/functions/submit-post', {
         method: 'POST',
         headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ passcode, title, content, imageUrl, videoUrl, date, submissionId: editingSubmissionId })
+        body: JSON.stringify({ passcode, title, content, imageUrl, videoUrl, date, postId: editingSubmissionId })
       });
       if(res.ok){
         msgEl.textContent = editingSubmissionId ? 'Changes saved.' : 'Post published.';
         msgEl.className = 'write-msg success';
         clearBlogEditor();
-        await fetchBlogPosts();
+        await fetchBlogPosts({admin:true});
         renderAdminPosts();
         renderBlogPosts();
       } else {

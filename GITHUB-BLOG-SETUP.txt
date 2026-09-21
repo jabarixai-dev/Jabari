@@ -1,0 +1,25 @@
+JABARI BLOG — GITHUB STORAGE
+
+The Blog now stores normal posts in:
+blog/posts.json
+
+Public visitors read that JSON directly from GitHub, so ordinary Blog page views do not invoke a Netlify Function.
+
+Admin writes use these Netlify Functions:
+- submit-post
+- delete-post
+- upload-blog-media
+
+Required Netlify environment variable:
+GITHUB_TOKEN
+
+Optional (defaults are already set for the current repository):
+GITHUB_OWNER=jabarixai-dev
+GITHUB_REPO=Jabari
+GITHUB_BRANCH=main
+
+BLOG_PASSCODE remains required for Blog Manager actions.
+
+The Reviews system still uses Netlify Forms and its existing NETLIFY_ACCESS_TOKEN / NETLIFY_SITE_ID variables.
+
+Do not expose GITHUB_TOKEN in browser code.
