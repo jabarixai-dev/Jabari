@@ -667,24 +667,42 @@
   // ---------------- Shop / Paystack checkout ----------------
   const PAYSTACK_PUBLIC_KEY = "pk_live_2a599ada99634da2642dce196ff20fb4847b652e";
 
-  const SHOP_PRODUCTS = [
-    {
-      slug: 'x-growth-playbook',
-      title: 'The X Growth Playbook',
-      desc: 'A practical system for building a real audience on X — positioning, content pillars, hooks, and a 30-day plan to put it all into motion.',
-      priceNaira: 1500,
-      priceKobo: 150000
-    },
-    {
-      slug: 'herbal-remedy-bible',
-      title: 'The Herbal Remedy Bible',
-      desc: 'A curated guide to traditional herbal wellness — common remedies, home preparation methods, and how to use them safely. Educational, not medical advice.',
-      priceNaira: 5000,
-      priceKobo: 500000
+  let SHOP_PRODUCTS = [];
+
+const SHOP_PRODUCTS_URL =
+  'https://raw.githubusercontent.com/jabarixai-dev/Jabari/main/shop/products.json';
+
+async function loadShopProducts(){
+  try{
+    const res = await fetch(SHOP_PRODUCTS_URL, {
+      cache: 'no-store'
+    });
+
+    if(!res.ok){
+      throw new Error('Could not load shop catalog');
     }
-  ];
+
+    const products = await res.json();
+
+    if(!Array.isArray(products)){
+      throw new Error('Invalid shop catalog');
+    }
+
+    SHOP_PRODUCTS = products.filter(product => product.active !== false);
+  }catch(err){
+    console.error('Shop catalog error:', err);
+    SHOP_PRODUCTS = [];
+  }
+}
 
   function renderShop(){
+  if(!Array.isArray(SHOP_PRODUCTS) || SHOP_PRODUCTS.length === 0){
+  const list = document.getElementById('shop-list');
+  if(list){
+    list.innerHTML = '<p class="blog-empty">Shop products are unavailable right now.</p>';
+  }
+  return;
+  }
     const list = document.getElementById('shop-list');
     if(!list || list.dataset.rendered) return;
     list.dataset.rendered = '1';
