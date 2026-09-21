@@ -433,6 +433,24 @@
   .admin-post-meta{font-size:11px;color:var(--muted);}
   .admin-post-buttons{display:flex;gap:7px;margin-top:10px;flex-wrap:wrap;}
 
+
+  /* ================= SHOP MANAGER ================= */
+  .shop-manager-list{display:flex;flex-direction:column;gap:12px;margin-top:16px;}
+  .shop-manager-row{padding:14px;border:1px solid var(--hairline);border-radius:10px;background:var(--surface-2);}
+  .shop-manager-row strong{display:block;font-family:Georgia,'Times New Roman',serif;font-size:16px;margin-bottom:4px;}
+  .shop-manager-meta{font-size:11px;color:var(--muted);line-height:1.5;}
+  .shop-manager-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px;}
+  .shop-manager-actions .btn{font-size:12px;padding:9px 12px;width:auto;}
+  .shop-editor-grid{display:grid;gap:10px;}
+  .shop-manager-msg{font-size:12.5px;margin-top:10px;text-align:center;}
+  .shop-manager-msg.success{color:var(--gold-bright);}
+  .shop-manager-msg.error{color:#e08a8a;}
+  .review-reply{margin-top:10px;padding:10px 12px;border-left:2px solid var(--gold-bright);background:rgba(255,255,255,0.03);border-radius:0 8px 8px 0;}
+  .review-reply strong{display:block;font-size:12px;margin-bottom:4px;color:var(--gold-bright);}
+  .review-reply p{margin:0;font-size:12.5px;line-height:1.55;color:var(--ivory);}
+  .review-admin-status{font-family:inherit;font-size:10px;font-weight:500;color:var(--muted);margin-left:5px;}
+  .shop-file-note{font-size:11px;color:var(--muted);line-height:1.5;margin:-3px 0 8px;}
+
   /* ================= BLOG MANAGER ================= */
   .write-form{
     padding:18px;border-radius:12px;
@@ -608,6 +626,11 @@
     </div>
 
     <div class="admin-panel">
+      <p class="section-label" style="margin-top:0;">Manual Control</p>
+      <a href="#shop-manager?admin=1" class="btn btn-outline">Open Shop Manager →</a>
+    </div>
+
+    <div class="admin-panel">
       <p class="field-label">Admin passcode</p>
       <input type="password" class="plain-input" id="write-passcode" placeholder="Passcode" autocomplete="current-password" />
       <p class="field-label">Title</p>
@@ -633,6 +656,119 @@
       <p class="section-label" style="margin-top:0;">Existing Posts</p>
       <div class="admin-post-list" id="admin-post-list">
         <p class="blog-empty">Enter your passcode and load posts.</p>
+      </div>
+    </div>
+
+    <footer class="foot">JABARI · Website Designer · Graphics Designer · Computer Scientist</footer>
+  </section>
+
+
+
+  <!-- ============ PRIVATE ADMIN DASHBOARD ============ -->
+  <section class="view" id="view-dashboard">
+    <a href="#home" class="back-link" data-nav="home">← Back</a>
+    <div class="page-head">
+      <p class="eyebrow" style="margin-top:8px;">Private Dashboard</p>
+      <h2>Jabari Control</h2>
+      <p>Your manual control center. Choose what you want to manage.</p>
+    </div>
+
+    <div class="admin-panel">
+      <p class="field-label">Admin passcode</p>
+      <input type="password" class="plain-input" id="dashboard-passcode" placeholder="Passcode" autocomplete="current-password" />
+      <button type="button" class="btn btn-primary" id="dashboard-unlock-btn">Unlock Dashboard</button>
+      <p class="shop-manager-msg" id="dashboard-msg"></p>
+    </div>
+
+    <div class="home-buttons" id="dashboard-links" style="display:none;">
+      <a href="#shop-manager?admin=1" class="home-btn gold">Shop Manager</a>
+      <a href="#write?admin=1" class="home-btn">Blog Manager</a>
+      <a href="#reviews-manager?admin=1" class="home-btn">Reviews Manager</a>
+    </div>
+
+    <footer class="foot">JABARI · Website Designer · Graphics Designer · Computer Scientist</footer>
+  </section>
+
+  <!-- ============ REVIEWS MANAGER ============ -->
+  <section class="view" id="view-reviews-manager">
+    <a href="#home" class="back-link" data-nav="home">← Back</a>
+    <div class="page-head">
+      <p class="eyebrow" style="margin-top:8px;">Reviews Manager</p>
+      <h2>Manage Reviews</h2>
+      <p>Approve, hide, reply to or delete customer reviews.</p>
+    </div>
+
+    <div class="admin-panel">
+      <p class="field-label">Admin passcode</p>
+      <input type="password" class="plain-input" id="reviews-passcode" placeholder="Passcode" autocomplete="current-password" />
+      <button type="button" class="btn btn-primary" id="reviews-load-btn">Load Reviews</button>
+      <p class="shop-manager-msg" id="reviews-manager-msg"></p>
+    </div>
+
+    <div class="admin-panel">
+      <p class="section-label" style="margin-top:0;">Customer Reviews</p>
+      <div class="shop-manager-list" id="reviews-manager-list">
+        <p class="blog-empty">Enter your passcode and load reviews.</p>
+      </div>
+    </div>
+
+    <footer class="foot">JABARI · Website Designer · Graphics Designer · Computer Scientist</footer>
+  </section>
+
+  <!-- ============ SHOP MANAGER ============ -->
+  <section class="view" id="view-shop-manager">
+    <a href="#home" class="back-link" data-nav="home">← Back</a>
+    <div class="page-head">
+      <p class="eyebrow" style="margin-top:8px;">Shop Manager</p>
+      <h2>Manage Shop</h2>
+      <p>Add, edit, activate or deactivate digital products.</p>
+    </div>
+
+    <div class="admin-panel">
+      <p class="field-label">Admin passcode</p>
+      <input type="password" class="plain-input" id="shop-passcode" placeholder="Passcode" autocomplete="current-password" />
+
+      <div class="shop-editor-grid">
+        <input type="hidden" id="shop-edit-slug" value="" />
+
+        <div>
+          <p class="field-label">Product title</p>
+          <input type="text" class="plain-input" id="shop-title" placeholder="Product title" />
+        </div>
+
+        <div>
+          <p class="field-label">Description</p>
+          <textarea class="plain-textarea" id="shop-desc" placeholder="Product description..." style="min-height:120px;"></textarea>
+        </div>
+
+        <div>
+          <p class="field-label">Price (₦)</p>
+          <input type="number" class="plain-input" id="shop-price" placeholder="1500" min="1" step="1" />
+        </div>
+
+        <div>
+          <p class="field-label">Downloadable PDF</p>
+          <p class="shop-file-note">PDF files are uploaded to GitHub and connected to this product. Maximum upload size: 10 MB.</p>
+          <input type="file" class="plain-input" id="shop-file" accept="application/pdf,.pdf" />
+        </div>
+
+        <label style="display:flex;align-items:center;gap:9px;font-size:13px;color:var(--ivory);">
+          <input type="checkbox" id="shop-active" checked />
+          Product is active in the public Shop
+        </label>
+      </div>
+
+      <div class="blog-admin-actions">
+        <button type="button" class="btn btn-primary" id="shop-save-btn">Save Product</button>
+        <button type="button" class="btn btn-outline" id="shop-cancel-btn" style="display:none;">Cancel Edit</button>
+      </div>
+      <p class="shop-manager-msg" id="shop-manager-msg"></p>
+    </div>
+
+    <div class="admin-panel">
+      <p class="section-label" style="margin-top:0;">Current Products</p>
+      <div class="shop-manager-list" id="shop-manager-list">
+        <p class="blog-empty">Enter your passcode and load products.</p>
       </div>
     </div>
 
@@ -674,7 +810,7 @@ const SHOP_PRODUCTS_URL =
 
 async function loadShopProducts(){
   try{
-    const res = await fetch(`${SHOP_PRODUCTS_URL}?v=${Date.now()}`, {
+    const res = await fetch(SHOP_PRODUCTS_URL, {
       cache: 'no-store'
     });
 
@@ -919,12 +1055,14 @@ async function loadShopProducts(){
         const stars = '★'.repeat(rating) + '☆'.repeat(Math.max(0,5-rating));
         const card = document.createElement('div');
         card.className = 'review-card';
+        const reply = item.reply || '';
         card.innerHTML = `
           <div class="review-card-top">
             <span class="review-name">${escapeHtml(d.name || 'Anonymous')}</span>
             <span class="review-stars">${stars}</span>
           </div>
           <p class="review-text">${escapeHtml(d.message || '')}</p>
+          ${reply ? `<div class="review-reply"><strong>Jabari</strong><p>${escapeHtml(reply)}</p></div>` : ''}
         `;
         listEl.appendChild(card);
       });
@@ -1386,6 +1524,380 @@ preview.innerHTML = d.image
 
   document.getElementById('write-passcode').addEventListener('change', loadAdminPosts);
 
+
+
+  // ---------------- Private Dashboard ----------------
+  document.getElementById('dashboard-unlock-btn').addEventListener('click', async () => {
+    const passcode = document.getElementById('dashboard-passcode').value.trim();
+    const msg = document.getElementById('dashboard-msg');
+    const links = document.getElementById('dashboard-links');
+
+    if(!passcode){
+      msg.textContent = 'Enter the admin passcode.';
+      msg.className = 'shop-manager-msg error';
+      links.style.display = 'none';
+      return;
+    }
+
+    msg.textContent = 'Checking…';
+    msg.className = 'shop-manager-msg';
+
+    try{
+      const res = await fetch('/.netlify/functions/manage-shop?passcode=' + encodeURIComponent(passcode), {
+        cache:'no-store'
+      });
+      if(!res.ok){
+        msg.textContent = res.status === 401 ? 'Incorrect passcode.' : 'Could not verify dashboard access.';
+        msg.className = 'shop-manager-msg error';
+        links.style.display = 'none';
+        return;
+      }
+      msg.textContent = 'Dashboard unlocked.';
+      msg.className = 'shop-manager-msg success';
+      links.style.display = 'grid';
+    }catch(err){
+      msg.textContent = 'Could not verify dashboard access.';
+      msg.className = 'shop-manager-msg error';
+      links.style.display = 'none';
+    }
+  });
+
+  // ---------------- Reviews Manager ----------------
+  let reviewAdminItems = [];
+
+  function setReviewsManagerMessage(message, type=''){
+    const el = document.getElementById('reviews-manager-msg');
+    if(!el) return;
+    el.textContent = message;
+    el.className = 'shop-manager-msg' + (type ? ' ' + type : '');
+  }
+
+  function renderReviewsAdmin(){
+    const list = document.getElementById('reviews-manager-list');
+    if(!list) return;
+    if(!reviewAdminItems.length){
+      list.innerHTML = '<p class="blog-empty">No reviews found.</p>';
+      return;
+    }
+
+    list.innerHTML = '';
+    reviewAdminItems.forEach(item => {
+      const d = item.data || {};
+      const rating = parseInt(d.rating,10) || 0;
+      const stars = '★'.repeat(rating) + '☆'.repeat(Math.max(0,5-rating));
+      const row = document.createElement('div');
+      row.className = 'shop-manager-row';
+      row.innerHTML = `
+        <strong>${escapeHtml(d.name || 'Anonymous')} <span class="review-admin-status">${item.status === 'hidden' ? 'Hidden' : 'Approved'}</span></strong>
+        <div class="shop-manager-meta">${stars} · ${new Date(item.created_at).toLocaleString()}</div>
+        <p class="review-text" style="margin-top:9px;">${escapeHtml(d.message || '')}</p>
+        ${item.reply ? `<div class="review-reply"><strong>Jabari reply</strong><p>${escapeHtml(item.reply)}</p></div>` : ''}
+        <div class="shop-manager-actions">
+          ${item.status === 'hidden'
+            ? `<button type="button" class="btn btn-outline" data-review-action="approve" data-review-id="${escapeHtml(item.id)}">Approve</button>`
+            : `<button type="button" class="btn btn-outline" data-review-action="hide" data-review-id="${escapeHtml(item.id)}">Hide</button>`}
+          <button type="button" class="btn btn-outline" data-review-action="reply" data-review-id="${escapeHtml(item.id)}">${item.reply ? 'Edit Reply' : 'Reply'}</button>
+          ${item.reply ? `<button type="button" class="btn btn-outline" data-review-action="delete-reply" data-review-id="${escapeHtml(item.id)}">Delete Reply</button>` : ''}
+          <button type="button" class="btn btn-outline" data-review-action="delete" data-review-id="${escapeHtml(item.id)}">Delete</button>
+        </div>`;
+      list.appendChild(row);
+    });
+  }
+
+  async function loadReviewAdminItems(){
+    const passcode = document.getElementById('reviews-passcode').value.trim();
+    if(!passcode){
+      setReviewsManagerMessage('Enter the admin passcode first.', 'error');
+      return;
+    }
+    setReviewsManagerMessage('Loading reviews…');
+    try{
+      const res = await fetch('/.netlify/functions/manage-reviews?passcode=' + encodeURIComponent(passcode), {cache:'no-store'});
+      const data = await res.json().catch(() => ({}));
+      if(!res.ok) throw new Error(res.status === 401 ? 'Incorrect passcode.' : (data.error || 'Could not load reviews.'));
+      reviewAdminItems = Array.isArray(data.items) ? data.items : [];
+      renderReviewsAdmin();
+      setReviewsManagerMessage('Reviews loaded.', 'success');
+    }catch(err){
+      setReviewsManagerMessage(err.message || 'Could not load reviews.', 'error');
+    }
+  }
+
+  async function reviewAdminAction(action, id){
+    const passcode = document.getElementById('reviews-passcode').value.trim();
+    if(!passcode){
+      setReviewsManagerMessage('Enter the admin passcode first.', 'error');
+      return;
+    }
+    const item = reviewAdminItems.find(x => x.id === id);
+    if(!item) return;
+
+    let reply = '';
+    if(action === 'reply'){
+      reply = window.prompt('Reply to this review:', item.reply || '') || '';
+      if(!reply.trim()) return;
+    }
+    if(action === 'delete' && !confirm('Delete this review permanently?')) return;
+    if(action === 'delete-reply' && !confirm('Delete your reply?')) return;
+
+    setReviewsManagerMessage(action === 'reply' ? 'Saving reply…' : 'Updating review…');
+    try{
+      const res = await fetch('/.netlify/functions/manage-reviews', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({action,id,passcode,reply})
+      });
+      const data = await res.json().catch(() => ({}));
+      if(!res.ok) throw new Error(data.error || 'Could not update review.');
+      await loadReviewAdminItems();
+      await loadReviews();
+      setReviewsManagerMessage('Review updated.', 'success');
+    }catch(err){
+      setReviewsManagerMessage(err.message || 'Could not update review.', 'error');
+    }
+  }
+
+  document.getElementById('reviews-load-btn').addEventListener('click', loadReviewAdminItems);
+  document.getElementById('reviews-passcode').addEventListener('change', loadReviewAdminItems);
+  document.getElementById('reviews-manager-list').addEventListener('click', e => {
+    const btn = e.target.closest('[data-review-action]');
+    if(!btn) return;
+    reviewAdminAction(btn.dataset.reviewAction, btn.dataset.reviewId);
+  });
+
+
+  // ---------------- Shop Manager ----------------
+  let shopAdminProducts = [];
+  let editingShopSlug = '';
+
+  function clearShopEditor(){
+    editingShopSlug = '';
+    document.getElementById('shop-edit-slug').value = '';
+    document.getElementById('shop-title').value = '';
+    document.getElementById('shop-desc').value = '';
+    document.getElementById('shop-price').value = '';
+    document.getElementById('shop-file').value = '';
+    document.getElementById('shop-active').checked = true;
+    document.getElementById('shop-save-btn').textContent = 'Save Product';
+    document.getElementById('shop-cancel-btn').style.display = 'none';
+  }
+
+  function setShopManagerMessage(message, type=''){
+    const el = document.getElementById('shop-manager-msg');
+    if(!el) return;
+    el.textContent = message;
+    el.className = 'shop-manager-msg' + (type ? ' ' + type : '');
+  }
+
+  function renderShopAdminProducts(){
+    const list = document.getElementById('shop-manager-list');
+    if(!list) return;
+
+    if(!shopAdminProducts.length){
+      list.innerHTML = '<p class="blog-empty">No products found.</p>';
+      return;
+    }
+
+    list.innerHTML = '';
+    shopAdminProducts.forEach(p => {
+      const row = document.createElement('div');
+      row.className = 'shop-manager-row';
+      row.innerHTML = `
+        <strong>${escapeHtml(p.title || 'Untitled')}</strong>
+        <div class="shop-manager-meta">
+          ${escapeHtml(p.slug || '')} · ₦${Number(p.priceNaira || 0).toLocaleString()}
+          · ${p.active === false ? 'Inactive' : 'Active'}
+          · ${escapeHtml(p.file || 'No file')}
+        </div>
+        <div class="shop-manager-actions">
+          <button type="button" class="btn btn-outline" data-shop-edit="${escapeHtml(p.slug || '')}">Edit</button>
+          <button type="button" class="btn btn-outline" data-shop-toggle="${escapeHtml(p.slug || '')}">
+            ${p.active === false ? 'Activate' : 'Deactivate'}
+          </button>
+          <button type="button" class="btn btn-outline" data-shop-delete="${escapeHtml(p.slug || '')}">Delete</button>
+        </div>`;
+      list.appendChild(row);
+    });
+  }
+
+  async function loadShopAdminProducts(){
+    const passcode = document.getElementById('shop-passcode').value.trim();
+    if(!passcode){
+      setShopManagerMessage('Enter the admin passcode first.', 'error');
+      return;
+    }
+
+    setShopManagerMessage('Loading products…');
+
+    try{
+      const res = await fetch('/.netlify/functions/manage-shop?passcode=' + encodeURIComponent(passcode), {
+        cache:'no-store'
+      });
+      const data = await res.json().catch(() => ({}));
+      if(!res.ok) throw new Error(res.status === 401 ? 'Incorrect passcode.' : (data.error || 'Could not load products.'));
+      shopAdminProducts = Array.isArray(data.products) ? data.products : [];
+      renderShopAdminProducts();
+      setShopManagerMessage('Products loaded.', 'success');
+    }catch(err){
+      setShopManagerMessage(err.message || 'Could not load products.', 'error');
+    }
+  }
+
+  function startShopEdit(slug){
+    const item = shopAdminProducts.find(p => p.slug === slug);
+    if(!item) return;
+
+    editingShopSlug = item.slug;
+    document.getElementById('shop-edit-slug').value = item.slug || '';
+    document.getElementById('shop-title').value = item.title || '';
+    document.getElementById('shop-desc').value = item.desc || '';
+    document.getElementById('shop-price').value = item.priceNaira || '';
+    document.getElementById('shop-file').value = '';
+    document.getElementById('shop-active').checked = item.active !== false;
+    document.getElementById('shop-save-btn').textContent = 'Save Changes';
+    document.getElementById('shop-cancel-btn').style.display = 'inline-flex';
+    window.scrollTo(0,0);
+  }
+
+  async function saveShopProduct(){
+    const passcode = document.getElementById('shop-passcode').value.trim();
+    const title = document.getElementById('shop-title').value.trim();
+    const desc = document.getElementById('shop-desc').value.trim();
+    const priceNaira = Number(document.getElementById('shop-price').value);
+    const active = document.getElementById('shop-active').checked;
+    const fileInput = document.getElementById('shop-file');
+    const file = fileInput.files && fileInput.files[0];
+
+    if(!passcode || !title || !desc || !Number.isFinite(priceNaira) || priceNaira <= 0){
+      setShopManagerMessage('Passcode, title, description and a valid price are required.', 'error');
+      return;
+    }
+
+    if(!editingShopSlug && !file){
+      setShopManagerMessage('A PDF file is required for a new product.', 'error');
+      return;
+    }
+
+    if(file){
+      if(file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')){
+        setShopManagerMessage('Please select a PDF file.', 'error');
+        return;
+      }
+      if(file.size > 10 * 1024 * 1024){
+        setShopManagerMessage('PDF must be 10 MB or smaller.', 'error');
+        return;
+      }
+    }
+
+    setShopManagerMessage(editingShopSlug ? 'Saving changes…' : 'Creating product…');
+
+    try{
+      let uploadedFile = null;
+
+      if(file){
+        const buffer = await file.arrayBuffer();
+        let binary = '';
+        const bytes = new Uint8Array(buffer);
+        const chunkSize = 0x8000;
+        for(let i=0;i<bytes.length;i+=chunkSize){
+          binary += String.fromCharCode(...bytes.subarray(i, Math.min(i+chunkSize, bytes.length)));
+        }
+        const base64 = btoa(binary);
+
+        const uploadRes = await fetch('/.netlify/functions/manage-shop', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({
+            action:'upload',
+            passcode,
+            filename:file.name,
+            contentBase64:base64
+          })
+        });
+
+        const uploadData = await uploadRes.json().catch(() => ({}));
+        if(!uploadRes.ok) throw new Error(uploadData.error || 'Could not upload PDF.');
+        uploadedFile = uploadData.file;
+      }
+
+      const saveRes = await fetch('/.netlify/functions/manage-shop', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          action:'save',
+          passcode,
+          slug:editingShopSlug || '',
+          title,
+          desc,
+          priceNaira,
+          active,
+          file:uploadedFile || undefined
+        })
+      });
+
+      const saveData = await saveRes.json().catch(() => ({}));
+      if(!saveRes.ok) throw new Error(saveData.error || 'Could not save product.');
+
+      setShopManagerMessage(editingShopSlug ? 'Product updated.' : 'Product created.', 'success');
+      clearShopEditor();
+      await loadShopAdminProducts();
+      await loadShopProducts();
+      renderShop();
+    }catch(err){
+      setShopManagerMessage(err.message || 'Something went wrong.', 'error');
+    }
+  }
+
+  async function shopAction(action, slug){
+    const passcode = document.getElementById('shop-passcode').value.trim();
+    if(!passcode){
+      setShopManagerMessage('Enter the admin passcode first.', 'error');
+      return;
+    }
+
+    const product = shopAdminProducts.find(p => p.slug === slug);
+    if(!product) return;
+
+    if(action === 'delete'){
+      if(!confirm(`Delete “${product.title || slug}”? This cannot be undone.`)) return;
+    }
+
+    setShopManagerMessage(action === 'delete' ? 'Deleting…' : 'Updating…');
+
+    try{
+      const res = await fetch('/.netlify/functions/manage-shop', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({action, passcode, slug})
+      });
+      const data = await res.json().catch(() => ({}));
+      if(!res.ok) throw new Error(data.error || 'Could not update product.');
+
+      if(editingShopSlug === slug) clearShopEditor();
+      await loadShopAdminProducts();
+      await loadShopProducts();
+      renderShop();
+      setShopManagerMessage(action === 'delete' ? 'Product deleted.' : 'Product updated.', 'success');
+    }catch(err){
+      setShopManagerMessage(err.message || 'Something went wrong.', 'error');
+    }
+  }
+
+  document.getElementById('shop-passcode').addEventListener('change', loadShopAdminProducts);
+  document.getElementById('shop-save-btn').addEventListener('click', saveShopProduct);
+  document.getElementById('shop-cancel-btn').addEventListener('click', clearShopEditor);
+
+  document.getElementById('shop-manager-list').addEventListener('click', (e) => {
+    const editBtn = e.target.closest('[data-shop-edit]');
+    const toggleBtn = e.target.closest('[data-shop-toggle]');
+    const deleteBtn = e.target.closest('[data-shop-delete]');
+
+    if(editBtn){ startShopEdit(editBtn.dataset.shopEdit); return; }
+    if(toggleBtn){ shopAction('toggle', toggleBtn.dataset.shopToggle); return; }
+    if(deleteBtn){ shopAction('delete', deleteBtn.dataset.shopDelete); }
+  });
+
+
   // ---------------- Routing ----------------
   const views = {
     '': 'view-home',
@@ -1395,7 +1907,10 @@ preview.innerHTML = d.image
     'download': 'view-download',
     'reviews': 'view-reviews',
     'blogs': 'view-blogs',
-    'write': 'view-write'
+    'write': 'view-write',
+    'shop-manager': 'view-shop-manager',
+    'reviews-manager': 'view-reviews-manager',
+    'dashboard': 'view-dashboard'
   };
   const crumbHTML = {
     'view-home': 'Home',
@@ -1404,20 +1919,23 @@ preview.innerHTML = d.image
     'view-download': '<a href="#home">Home</a> / Shop / Download',
     'view-reviews': '<a href="#home">Home</a> / Reviews',
     'view-blogs': '<a href="#home">Home</a> / My Blogs',
-    'view-write': '<a href="#home">Home</a> / Blog Manager'
+    'view-write': '<a href="#home">Home</a> / Blog Manager',
+    'view-shop-manager': '<a href="#home">Home</a> / Shop Manager',
+    'view-reviews-manager': '<a href="#home">Home</a> / Reviews Manager',
+    'view-dashboard': '<a href="#home">Home</a> / Dashboard'
   };
 
   function route(){
     const raw = window.location.hash.replace('#','');
     const [pathPart, queryPart] = raw.split('?');
     const hash = pathPart.toLowerCase();
-    const isAdminRoute = hash === 'write' && queryPart === 'admin=1';
+    const isAdminRoute = (hash === 'write' || hash === 'shop-manager' || hash === 'reviews-manager' || hash === 'dashboard') && queryPart === 'admin=1';
     const target = views[hash] || 'view-home';
 
     // The Blog Manager is not part of the public navigation. It is only
     // reachable through the private admin route #write?admin=1 and still
     // requires the server-side admin passcode for management actions.
-    if(hash === 'write' && !isAdminRoute){
+    if((hash === 'write' || hash === 'shop-manager' || hash === 'reviews-manager' || hash === 'dashboard') && !isAdminRoute){
       window.location.hash = 'blogs';
       return;
     }
@@ -1444,6 +1962,9 @@ preview.innerHTML = d.image
     }
     if(target === 'view-write'){
       // Posts are loaded after the admin passcode is entered.
+    }
+    if(target === 'view-shop-manager'){
+      // Products are loaded after the admin passcode is entered.
     }
   }
   window.addEventListener('hashchange', route);
