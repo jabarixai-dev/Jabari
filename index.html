@@ -1009,8 +1009,11 @@
     document.getElementById('write-date').value = todayISO();
     document.getElementById('write-image').value = '';
     document.getElementById('write-video').value = '';
-    document.getElementById('write-media').value = '';
-    document.getElementById('write-media-preview').innerHTML = '';
+      document.getElementById('write-media').value = '';
+  const mediaPreview = document.getElementById('write-media-preview');
+  mediaPreview.innerHTML = '';
+  mediaPreview._prepared = null;
+  mediaPreview._originalName = '';
     document.getElementById('write-content').value = '';
     document.getElementById('write-submit-btn').textContent = 'Publish Post';
     document.getElementById('write-cancel-btn').style.display = 'none';
@@ -1070,8 +1073,10 @@
     document.getElementById('write-image').value = d.image || '';
     document.getElementById('write-video').value = d.video || '';
     document.getElementById('write-media').value = '';
-    const preview = document.getElementById('write-media-preview');
-    preview.innerHTML = d.image
+   const preview = document.getElementById('write-media-preview');
+preview._prepared = null;
+preview._originalName = '';
+preview.innerHTML = d.image
       ? `<img src="${escapeHtml(d.image)}" alt="" class="write-preview-media">`
       : (d.video ? `<video src="${escapeHtml(d.video)}" controls class="write-preview-media"></video>` : '');
     document.getElementById('write-content').value = d.content || '';
