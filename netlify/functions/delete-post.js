@@ -1,6 +1,6 @@
 // Deletes a normal Blog post from GitHub: blog/posts.json.
 // Required: BLOG_PASSCODE, GITHUB_TOKEN.
-const {getPosts,savePosts}=require('../lib/github-blog');
+const {getPosts,savePosts}=require('./lib/github-blog');
 
 exports.handler=async event=>{
   if(event.httpMethod!=='POST') return {statusCode:405,body:'Method not allowed'};
