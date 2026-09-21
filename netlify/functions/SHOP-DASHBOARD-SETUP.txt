@@ -1,0 +1,27 @@
+JABARI SHOP DASHBOARD
+
+Files:
+- index.html — updated private manual dashboard + Shop Manager
+- netlify/functions/manage-shop.js — secure GitHub-backed Shop Manager API
+- netlify/functions/verify-payment.js — existing payment verification plus GitHub PDF fallback
+
+Deploy:
+1. Replace the repository root index.html with this index.html.
+2. Add netlify/functions/manage-shop.js.
+3. Replace netlify/functions/verify-payment.js with the included version.
+4. Keep the existing environment variables:
+   GITHUB_TOKEN
+   GITHUB_OWNER=jabarixai-dev
+   GITHUB_REPO=Jabari
+   GITHUB_BRANCH=main
+   BLOG_PASSCODE
+   PAYSTACK_SECRET_KEY
+5. Commit and let Netlify deploy.
+
+Private dashboard:
+#dashboard?admin=1
+
+Shop Manager:
+#shop-manager?admin=1
+
+The dashboard uses BLOG_PASSCODE for manual admin authentication.

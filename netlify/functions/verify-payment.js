@@ -82,6 +82,39 @@ function verifyWithPaystack(reference, secretKey) {
   });
 }
 
+
+function fetchGithubFile(fileName) {
+  const owner = process.env.GITHUB_OWNER || 'jabarixai-dev';
+  const repo = process.env.GITHUB_REPO || 'Jabari';
+  const branch = process.env.GITHUB_BRANCH || 'main';
+  const urlPath =
+    `/shop/files/${encodeURIComponent(fileName)}`;
+
+  return new Promise((resolve, reject) => {
+    const req = https.request({
+      hostname: 'raw.githubusercontent.com',
+      path: `/${owner}/${repo}/${encodeURIComponent(branch)}${urlPath}`,
+      method: 'GET',
+      headers: {
+        'User-Agent': 'Jabari-Payment-Verifier'
+      }
+    }, (res) => {
+      if (res.statusCode < 200 || res.statusCode >= 300) {
+        res.resume();
+        reject(new Error(`GitHub file returned HTTP ${res.statusCode}`));
+        return;
+      }
+
+      const chunks = [];
+      res.on('data', chunk => chunks.push(chunk));
+      res.on('end', () => resolve(Buffer.concat(chunks)));
+    });
+
+    req.on('error', reject);
+    req.end();
+  });
+}
+
 exports.handler = async (event) => {
   const { reference, product } = event.queryStringParameters || {};
 
@@ -210,10 +243,18 @@ exports.handler = async (event) => {
 
     fileBuffer = fs.readFileSync(filePath);
   } catch (err) {
-    return {
-      statusCode: 500,
-      body: 'Product file missing on server'
-    };
+    // New products managed from the dashboard are stored in GitHub under
+    // shop/files/. Keep the existing local-file path working for current
+    // products, then fall back to the GitHub-backed file.
+    try {
+      fileBuffer = await fetchGithubFile(safeFileName);
+    } catch (githubErr) {
+      console.error('Product file error:', githubErr);
+      return {
+        statusCode: 500,
+        body: 'Product file missing on server'
+      };
+    }
   }
 
   return {
