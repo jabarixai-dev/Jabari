@@ -18,5 +18,15 @@
     "file": "the-herbal-remedy-bible.pdf",
     "contentType": "application/pdf",
     "active": true
+  },
+  {
+    "slug": "the-summer-we-forgot",
+    "title": "The Summer We Forgot",
+    "desc": "The Summer We Forgot but didn't forget",
+    "priceNaira": 2000,
+    "priceKobo": 200000,
+    "file": "the-summer-we-forgot-1790022308663-psjd2.pdf",
+    "contentType": "application/pdf",
+    "active": true
   }
 ]
