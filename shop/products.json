@@ -1,0 +1,22 @@
+[
+  {
+    "slug": "x-growth-playbook",
+    "title": "The X Growth Playbook",
+    "desc": "A practical system for building a real audience on X — positioning, content pillars, hooks, and a 30-day plan to put it all into motion.",
+    "priceNaira": 1500,
+    "priceKobo": 150000,
+    "file": "the-x-growth-playbook.pdf",
+    "contentType": "application/pdf",
+    "active": true
+  },
+  {
+    "slug": "herbal-remedy-bible",
+    "title": "The Herbal Remedy Bible",
+    "desc": "A curated guide to traditional herbal wellness — common remedies, home preparation methods, and how to use them safely. Educational, not medical advice.",
+    "priceNaira": 5000,
+    "priceKobo": 500000,
+    "file": "the-herbal-remedy-bible.pdf",
+    "contentType": "application/pdf",
+    "active": true
+  }
+]
