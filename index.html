@@ -595,9 +595,6 @@
     <div class="blog-list" id="blog-list">
       <p class="blog-empty">Loading posts…</p>
     </div>
-    <div style="text-align:center;margin-top:18px;">
-      <a href="#write" class="btn btn-outline">Manage Blog</a>
-    </div>
     <footer class="foot">JABARI · Website Designer · Graphics Designer · Computer Scientist</footer>
   </section>
 
@@ -1372,14 +1369,23 @@
     'view-download': '<a href="#home">Home</a> / Shop / Download',
     'view-reviews': '<a href="#home">Home</a> / Reviews',
     'view-blogs': '<a href="#home">Home</a> / My Blogs',
-    'view-write': '<a href="#home">Home</a> / Write a Post'
+    'view-write': '<a href="#home">Home</a> / Blog Manager'
   };
 
   function route(){
     const raw = window.location.hash.replace('#','');
     const [pathPart, queryPart] = raw.split('?');
     const hash = pathPart.toLowerCase();
+    const isAdminRoute = hash === 'write' && queryPart === 'admin=1';
     const target = views[hash] || 'view-home';
+
+    // The Blog Manager is not part of the public navigation. It is only
+    // reachable through the private admin route #write?admin=1 and still
+    // requires the server-side admin passcode for management actions.
+    if(hash === 'write' && !isAdminRoute){
+      window.location.hash = 'blogs';
+      return;
+    }
 
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     document.getElementById(target).classList.add('active');
