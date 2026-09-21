@@ -1,6 +1,6 @@
 // Creates or edits a normal Blog post in GitHub: blog/posts.json.
 // Required: BLOG_PASSCODE, GITHUB_TOKEN. Optional: GITHUB_OWNER, GITHUB_REPO, GITHUB_BRANCH.
-const {getPosts,savePosts}=require('../lib/github-blog');
+const {getPosts,savePosts}=require('./lib/github-blog');
 
 exports.handler=async event=>{
   if(event.httpMethod!=='POST') return {statusCode:405,body:'Method not allowed'};
