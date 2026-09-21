@@ -1,0 +1,41 @@
+JABARI REVIEWS MANAGER
+
+Files in this package:
+- index.html
+- netlify/functions/manage-reviews.js
+- netlify/functions/list-submissions.js
+
+WHAT THIS ADDS
+- Private Reviews Manager at #reviews-manager?admin=1
+- Dashboard link to Reviews Manager
+- View approved and hidden reviews
+- Approve/hide reviews
+- Delete reviews
+- Add/edit/delete a Jabari reply
+- Public approved reviews can display the Jabari reply
+- Replies are stored in GitHub at reviews/replies.json so the website and Jabari Promoter can use the same data source.
+
+DEPLOY
+1. Replace the repository root index.html with this package's index.html.
+2. Add/replace netlify/functions/manage-reviews.js.
+3. Replace netlify/functions/list-submissions.js with this package's version.
+4. Keep the existing Netlify/GitHub environment variables:
+   BLOG_PASSCODE
+   NETLIFY_ACCESS_TOKEN
+   NETLIFY_SITE_ID
+   GITHUB_TOKEN
+   GITHUB_OWNER=jabarixai-dev
+   GITHUB_REPO=Jabari
+   GITHUB_BRANCH=main
+5. Commit and let Netlify deploy.
+
+USE
+Dashboard: #dashboard?admin=1
+Reviews Manager: #reviews-manager?admin=1
+
+IMPORTANT
+- Existing public Reviews submissions remain in Netlify Forms.
+- Hiding a review marks it as spam through the Netlify API, so it disappears from the public approved list.
+- Approving a hidden review marks it verified again.
+- Deleting a review permanently removes the Netlify submission. Its stored Jabari reply is also removed.
+- The bot can later use the same manage-reviews actions/data; this does not create a separate review database.
