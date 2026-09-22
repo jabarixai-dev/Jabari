@@ -775,14 +775,6 @@
     <footer class="foot">JABARI · Website Designer · Graphics Designer · Computer Scientist</footer>
   </section>
 
-  <!-- Hidden static forms so Netlify's build-time crawler can detect them -->
-  <form name="reviews" data-netlify="true" data-netlify-honeypot="bot-field" hidden>
-    <input type="text" name="name" />
-    <input type="text" name="rating" />
-    <textarea name="message"></textarea>
-    <input type="text" name="bot-field" />
-  </form>
-
 </div>
 
 <script>
@@ -1039,34 +1031,89 @@ async function loadShopProducts(){
 
   async function loadReviews(){
     const listEl = document.getElementById('review-list');
+    if(!listEl) return;
+
     try{
-      const res = await fetch('/.netlify/functions/list-submissions?form=reviews');
-      const data = await res.json();
-      const items = data.items || [];
-      if(items.length === 0){
-        listEl.innerHTML = '<p class="review-empty">No reviews yet — be the first to leave one!</p>';
+      listEl.innerHTML =
+        '<p class="review-empty">Loading reviews…</p>';
+
+      // Public reviews are read directly from the shared GitHub data source.
+      // This avoids requiring the admin passcode for public visitors.
+      const res = await fetch(
+        `https://raw.githubusercontent.com/jabarixai-dev/Jabari/main/reviews/reviews.json?t=${Date.now()}`,
+        { cache: 'no-store' }
+      );
+
+      if(!res.ok){
+        throw new Error('Could not load reviews.');
+      }
+
+      const items = await res.json();
+
+      if(!Array.isArray(items)){
+        throw new Error('Invalid reviews data.');
+      }
+
+      // Only show reviews that are not hidden.
+      const visibleItems = items.filter(
+        item => item && item.status !== 'hidden'
+      );
+
+      if(visibleItems.length === 0){
+        listEl.innerHTML =
+          '<p class="review-empty">No reviews yet — be the first to leave one!</p>';
         return;
       }
+
       listEl.innerHTML = '';
-      items.forEach(item => {
-        const d = item.data || {};
-        const rating = parseInt(d.rating,10) || 0;
-        const stars = '★'.repeat(rating) + '☆'.repeat(Math.max(0,5-rating));
+
+      visibleItems.forEach(item => {
+        const rating = parseInt(item.rating, 10) || 0;
+
+        const stars =
+          '★'.repeat(Math.min(5, Math.max(0, rating))) +
+          '☆'.repeat(Math.max(0, 5 - Math.min(5, Math.max(0, rating))));
+
         const card = document.createElement('div');
         card.className = 'review-card';
+
         const reply = item.reply || '';
+
         card.innerHTML = `
           <div class="review-card-top">
-            <span class="review-name">${escapeHtml(d.name || 'Anonymous')}</span>
-            <span class="review-stars">${stars}</span>
+            <span class="review-name">
+              ${escapeHtml(item.name || 'Anonymous')}
+            </span>
+
+            <span class="review-stars">
+              ${stars}
+            </span>
           </div>
-          <p class="review-text">${escapeHtml(d.message || '')}</p>
-          ${reply ? `<div class="review-reply"><strong>Jabari</strong><p>${escapeHtml(reply)}</p></div>` : ''}
+
+          <p class="review-text">
+            ${escapeHtml(item.message || '')}
+          </p>
+
+          ${
+            reply
+              ? `
+                <div class="review-reply">
+                  <strong>${escapeHtml(item.replyAuthor || 'Jabari')}</strong>
+                  <p>${escapeHtml(reply)}</p>
+                </div>
+              `
+              : ''
+          }
         `;
+
         listEl.appendChild(card);
       });
-    } catch(err){
-      listEl.innerHTML = '<p class="review-empty">Could not load reviews right now.</p>';
+
+    }catch(err){
+      console.error('Reviews error:', err);
+
+      listEl.innerHTML =
+        '<p class="review-empty">Could not load reviews right now.</p>';
     }
   }
 
