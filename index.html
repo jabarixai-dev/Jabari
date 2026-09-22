@@ -722,22 +722,17 @@ async function loadShopProducts(){
 }
 
   function renderShop(){
-  const list = document.getElementById('shop-list');
+    const list = document.getElementById('shop-list');
+    if(!list) return;
 
-  if(list){
     list.innerHTML = '';
     list.dataset.rendered = '';
-  }
 
-  if(!Array.isArray(SHOP_PRODUCTS) || SHOP_PRODUCTS.length === 0){
-  const list = document.getElementById('shop-list');
-  if(list){
-    list.innerHTML = '<p class="blog-empty">Shop products are unavailable right now.</p>';
-  }
-  return;
-  }
-    const list = document.getElementById('shop-list');
-    if(!list || list.dataset.rendered) return;
+    if(!Array.isArray(SHOP_PRODUCTS) || SHOP_PRODUCTS.length === 0){
+      list.innerHTML = '<p class="blog-empty">Shop products are unavailable right now.</p>';
+      return;
+    }
+
     list.dataset.rendered = '1';
     SHOP_PRODUCTS.forEach(p => {
       const item = document.createElement('div');
