@@ -1,0 +1,18 @@
+{
+  "logoUrl": "",
+  "name": "JABARI",
+  "tagline": "Website Designer · Graphics Designer · Computer Scientist",
+  "socials": {
+    "whatsapp": "https://wa.me/2349031761024",
+    "x": "https://x.com/King_Jabari",
+    "telegram": "https://t.me/King_Jabari",
+    "youtube": "https://youtube.com/@king_jabari?si=ZTs8BNNN0XczyBEQ"
+  },
+  "buttons": [
+    { "text": "About", "href": "#about" },
+    { "text": "Reviews", "href": "#reviews" },
+    { "text": "Shop", "href": "#shop" },
+    { "text": "My Blogs", "href": "#blogs" }
+  ],
+  "footer": "Africa · AI · Markets · Culture · Truth"
+}
