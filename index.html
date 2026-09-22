@@ -696,6 +696,13 @@ async function loadShopProducts(){
 }
 
   function renderShop(){
+  const list = document.getElementById('shop-list');
+
+  if(list){
+    list.innerHTML = '';
+    list.dataset.rendered = '';
+  }
+
   if(!Array.isArray(SHOP_PRODUCTS) || SHOP_PRODUCTS.length === 0){
   const list = document.getElementById('shop-list');
   if(list){
@@ -1526,9 +1533,9 @@ preview.innerHTML = d.image
     document.getElementById('crumbs').innerHTML = crumbHTML[target];
     window.scrollTo(0,0);
 
-    if(target === 'view-shop'){
-      renderShop();
-    }
+   if(target === 'view-shop'){
+  loadShopProducts().then(renderShop);
+   }
     if(target === 'view-download'){
       const params = new URLSearchParams(queryPart || '');
       runDownloadVerification(params.get('ref'), params.get('product'));
