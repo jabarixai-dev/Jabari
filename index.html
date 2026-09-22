@@ -1115,7 +1115,7 @@ document.getElementById('article-content').innerHTML =
         ${video}
         <p class="blog-date">${escapeHtml(formatBlogDate(date))}</p>
         <h3 class="blog-title">${escapeHtml(d.title || 'Untitled')}</h3>
-        <p class="blog-body">${escapeHtml(String(d.content || '').replace(/<[^>]+>/g,'').slice(0,260))}${String(d.content||'').length>260?'…':''}</p>
+        <p class="blog-body">${escapeHtml(normalizeBlogContent(d.content || '').replace(/<[^>]+>/g,'').slice(0,260))}${normalizeBlogContent(d.content || '').replace(/<[^>]+>/g,'').length>260?'…':''}</p>
         <a class="btn btn-outline" href="#blog/${encodeURIComponent(slug)}">Read Article →</a>`;
       listEl.appendChild(card);
     });
