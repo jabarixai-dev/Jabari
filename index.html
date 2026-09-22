@@ -696,13 +696,6 @@ async function loadShopProducts(){
 }
 
   function renderShop(){
-  const list = document.getElementById('shop-list');
-
-  if(list){
-    list.innerHTML = '';
-    list.dataset.rendered = '';
-  }
-
   if(!Array.isArray(SHOP_PRODUCTS) || SHOP_PRODUCTS.length === 0){
   const list = document.getElementById('shop-list');
   if(list){
@@ -1426,72 +1419,6 @@ preview.innerHTML = d.image
 
   document.getElementById('write-passcode').addEventListener('change', loadAdminPosts);
 
-  // ---------------- Editable Home Content ----------------
-  const HOME_PUBLIC_DATA_URL =
-    'https://raw.githubusercontent.com/jabarixai-dev/Jabari/main/home/content.json';
-
-  const HOME_DEFAULTS = {
-    logoUrl: '',
-    name: 'JABARI',
-    tagline: 'Website Designer · Graphics Designer · Computer Scientist',
-    socials: {
-      whatsapp: 'https://wa.me/2349031761024',
-      x: 'https://x.com/King_Jabari',
-      telegram: 'https://t.me/King_Jabari',
-      youtube: 'https://youtube.com/@king_jabari?si=ZTs8BNNN0XczyBEQ'
-    },
-    buttons: [
-      {text:'About', href:'#about'},
-      {text:'Reviews', href:'#reviews'},
-      {text:'Shop', href:'#shop'},
-      {text:'My Blogs', href:'#blogs'}
-    ],
-    footer: 'Africa · AI · Markets · Culture · Truth'
-  };
-
-  function applyHomeContent(home){
-    const data = home || HOME_DEFAULTS;
-    const nameEl = document.getElementById('home-name');
-    const taglineEl = document.getElementById('home-tagline');
-    const footerEl = document.getElementById('home-footer');
-    const logoEl = document.getElementById('home-logo');
-
-    if(nameEl) nameEl.innerHTML = escapeHtml(data.name || HOME_DEFAULTS.name) + '<span class="dot">.</span>';
-    if(taglineEl) taglineEl.textContent = data.tagline || HOME_DEFAULTS.tagline;
-    if(footerEl) footerEl.textContent = data.footer || HOME_DEFAULTS.footer;
-    if(logoEl && data.logoUrl) logoEl.src = data.logoUrl;
-
-    const socials = data.socials || {};
-    document.querySelectorAll('[data-home-social]').forEach(a => {
-      const key = a.dataset.homeSocial;
-      if(socials[key]) a.href = socials[key];
-    });
-
-    const buttons = Array.isArray(data.buttons) ? data.buttons : [];
-    document.querySelectorAll('[data-home-button]').forEach(a => {
-      const i = Number(a.dataset.homeButton);
-      const b = buttons[i];
-      if(!b) return;
-      a.textContent = b.text || '';
-      a.href = b.href || '#home';
-    });
-  }
-
-  async function loadHomeContent(){
-    try{
-      const res = await fetch(HOME_PUBLIC_DATA_URL + '?t=' + Date.now(), {cache:'no-store'});
-      if(!res.ok) throw new Error('Home content unavailable');
-      const data = await res.json();
-      applyHomeContent(data);
-    }catch(err){
-      // Keep the existing embedded Home content as a zero-delay fallback.
-      console.warn('Home content load failed:', err.message);
-      applyHomeContent(HOME_DEFAULTS);
-    }
-  }
-
-  loadHomeContent();
-
   // ---------------- Routing ----------------
   const views = {
     '': 'view-home',
@@ -1533,9 +1460,9 @@ preview.innerHTML = d.image
     document.getElementById('crumbs').innerHTML = crumbHTML[target];
     window.scrollTo(0,0);
 
-   if(target === 'view-shop'){
-  loadShopProducts().then(renderShop);
-   }
+    if(target === 'view-shop'){
+      loadShopProducts().then(renderShop);
+    }
     if(target === 'view-download'){
       const params = new URLSearchParams(queryPart || '');
       runDownloadVerification(params.get('ref'), params.get('product'));
