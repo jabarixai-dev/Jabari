@@ -7,5 +7,14 @@
     "video": "",
     "date": "2026-09-21",
     "updatedAt": "2026-09-21T16:31:52.434Z"
+  },
+  {
+    "id": "post-1790066739844-g209h6",
+    "title": "Alibaba Unveils China’s Most Powerful AI Chip and Plans for 10-Trillion-Parameter Models",
+    "content": "On Tuesday, September 22, 2026, Alibaba Group presented a significant statement of strategic ambition at its Apsara Conference in Hangzhou. The company unveiled the Zhenwu V900, identified as China’s most powerful artificial intelligence chip to date, and outlined plans for the development of substantially larger AI models.\n\nDeveloped by Alibaba’s T-Head semiconductor division, the Zhenwu V900 provides three times the performance of its predecessor, the M890. The chip features 216 GB of memory and 1,200 GB/s inter-chip bandwidth. Alibaba indicates that clusters of this new processor can scale to as many as 500,000 units to facilitate frontier-model training and inference. Mass production and commercial availability are scheduled for the first quarter of 2027.\n\nConcurrently, CEO Eddie Wu disclosed that Alibaba’s Qwen team is already training its next-generation model, Qwen 4. Future iterations, specifically Qwen 4.5 and Qwen 5, are projected to attain 5 to 10 trillion parameters. This scale would render them approximately two to four times larger than the current flagship Qwen 3.8 Max, which possesses 2.4 trillion parameters. These expanded models are engineered for more complex, longer-horizon tasks as the company advances its pursuit of artificial superintelligence.\n\nFurthermore, Alibaba established a long-term infrastructure objective: expanding its global Alibaba Cloud data-center capacity beyond 20 gigawatts by 2032.\n\nThese dual announcements, combining advanced domestic silicon with aggressive model scaling, highlight Alibaba’s full-stack strategy encompassing chips, models, and cloud infrastructure. These developments occur as Chinese enterprises continue to prioritize greater self-reliance in AI hardware amidst ongoing export restrictions on advanced semiconductors.\n\nAlibaba shares increased following the announcement, reflecting investor confidence in the company’s artificial intelligence roadmap.",
+    "image": "",
+    "video": "",
+    "date": "2026-09-22",
+    "updatedAt": "2026-09-22T08:45:39.844Z"
   }
 ]
