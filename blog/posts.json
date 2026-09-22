@@ -16,5 +16,14 @@
     "video": "",
     "date": "2026-09-21",
     "updatedAt": "2026-09-21T16:31:52.434Z"
+  },
+  {
+    "id": "post-1790081754275-vap29h",
+    "title": "Meta Patches Zero-Day Flaw in Muse Mac App That Could Turn the AI Agent into a Backdoor",
+    "content": "Meta has released an emergency hotfix for its Muse AI assistant on macOS after security researcher Patrick Wardle discovered a zero-day vulnerability that could allow a local attacker to hijack the AI agent.\n\nWardle, founder of the Objective-See Foundation, disclosed the vulnerability on September 21, 2026. According to his findings, any application or terminal command running under the same user account could modify an undocumented Muse setting called \"endo_voyager_dictation_endpoint\".\n\nBy changing this setting, an attacker could redirect Muse's voice-dictation traffic away from Meta's servers to an endpoint controlled by the attacker.\n\nThat could expose users to several risks. An attacker could potentially capture spoken prompts, inject malicious instructions, and steal Muse authentication tokens. The situation is particularly significant because AI assistants such as Muse may have access to sensitive device capabilities, including files, the microphone, camera, location, calendars, and connected services.\n\nWardle released proof-of-concept code demonstrating the issue and advised users not to install the application until Meta addressed the vulnerability. He described the flaw as making it possible to turn Muse into what he called an “ultimate backdoor.”\n\nMeta said the vulnerability was a local privilege-escalation issue, meaning it could not simply be exploited remotely over the internet. An attacker would first need the ability to execute code on the target Mac, potentially through existing malware or social engineering.\n\nThe company has since released a hotfix addressing the vulnerability and said the practical risk was limited because exploitation required local access to the device.\n\nThe discovery comes only weeks after Muse's launch and the release of its Mac application. Meta had promoted the assistant's security architecture, including isolated execution environments and a “Sentinel” system designed to reduce the impact of errors and attacks.\n\nThe incident highlights a broader security challenge surrounding increasingly powerful AI agents: the more access an AI assistant has to a user's device and services, the greater the potential impact when that assistant is compromised.\n\nIf you use the Muse Mac app, make sure you have installed the latest available update.",
+    "image": "https://raw.githubusercontent.com/jabarixai-dev/Jabari/main/blog-media/telegram-1790081745360-bi37xn.jpg",
+    "video": "",
+    "date": "2026-09-22",
+    "updatedAt": "2026-09-22T12:55:54.275Z"
   }
 ]
