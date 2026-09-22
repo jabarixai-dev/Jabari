@@ -449,6 +449,13 @@
 
 
   .honeypot-field{position:absolute;left:-9999px;top:-9999px;}
+
+  .blog-article-body{font-size:1.05rem;line-height:1.85;max-width:860px;margin:0 auto;}
+  .blog-article-body h2{font-family:Georgia,'Times New Roman',serif;color:var(--gold-bright);margin:1.8rem 0 .7rem;}
+  .blog-article-body p{margin:0 0 1rem;}
+  .blog-article-body ul{padding-left:1.3rem;}
+  .article-share{display:flex;gap:10px;flex-wrap:wrap;margin:24px 0;}
+  .blog-ad{margin:22px auto;padding:14px;border:1px dashed var(--hairline);color:var(--muted);text-align:center;font-size:.75rem;letter-spacing:.08em;max-width:860px;}
 </style>
 </head>
 <body>
@@ -598,6 +605,25 @@
     <footer class="foot">JABARI · Website Designer · Graphics Designer · Computer Scientist</footer>
   </section>
 
+  <!-- ============ BLOG ARTICLE VIEW ============ -->
+  <section class="view" id="view-blog-article">
+    <a href="#blogs" class="back-link" data-nav="blogs">← Back to Blog</a>
+    <div class="page-head">
+      <p class="eyebrow" id="article-type">Blog</p>
+      <h2 id="article-title">Article</h2>
+      <p id="article-date" class="blog-date"></p>
+    </div>
+    <div id="article-media"></div>
+    <div class="blog-ad" aria-label="Advertisement">Advertisement</div>
+    <article class="blog-article-body" id="article-content"></article>
+    <div class="article-share">
+      <button type="button" class="btn btn-primary" id="article-share-btn">↗ Share Article</button>
+      <button type="button" class="btn btn-outline" id="article-copy-btn">Copy Link</button>
+    </div>
+    <div class="blog-ad" aria-label="Advertisement">Advertisement</div>
+    <footer class="foot">JABARI · Website Designer · Graphics Designer · Computer Scientist</footer>
+  </section>
+
   <!-- ============ BLOG MANAGER ============ -->
   <section class="view" id="view-write">
     <a href="#home" class="back-link" data-nav="home">← Back</a>
@@ -696,6 +722,13 @@ async function loadShopProducts(){
 }
 
   function renderShop(){
+  const list = document.getElementById('shop-list');
+
+  if(list){
+    list.innerHTML = '';
+    list.dataset.rendered = '';
+  }
+
   if(!Array.isArray(SHOP_PRODUCTS) || SHOP_PRODUCTS.length === 0){
   const list = document.getElementById('shop-list');
   if(list){
@@ -972,7 +1005,9 @@ async function loadShopProducts(){
           image: item.image || '',
           video: item.video || '',
           'post-date': item.date || '',
-          updatedAt: item.updatedAt || ''
+          updatedAt: item.updatedAt || '',
+          slug: item.slug || item.id || '',
+          articleType: item.articleType || item.category || 'blog'
         },
         updatedAt: item.updatedAt || '',
         created_at: item.updatedAt || item.date || ''
@@ -996,6 +1031,47 @@ async function loadShopProducts(){
     return blogItems;
   }
 
+  function sanitizeBlogHtml(html){
+    const tpl=document.createElement('template'); tpl.innerHTML=String(html||'');
+    tpl.content.querySelectorAll('script,iframe,object,embed,form,style').forEach(n=>n.remove());
+    tpl.content.querySelectorAll('*').forEach(el=>{
+      [...el.attributes].forEach(a=>{ if(/^on/i.test(a.name)) el.removeAttribute(a.name); });
+      if(el.tagName==='A'){
+        const href=el.getAttribute('href')||'';
+        if(!/^https?:\/\//i.test(href)) el.removeAttribute('href');
+        else { el.setAttribute('target','_blank'); el.setAttribute('rel','noopener noreferrer'); }
+      }
+    });
+    return tpl.innerHTML;
+  }
+  function articleUrl(post){
+    const slug=post?.data?.slug || post?.id || ''; return window.location.origin+window.location.pathname+'#blog/'+encodeURIComponent(slug);
+  }
+  function findBlogPost(slug){
+    return blogItems.find(x=>String(x?.data?.slug||x?.id||'')===String(slug));
+  }
+  async function openBlogArticle(slug){
+    try{
+      if(!blogItems.length) await fetchBlogPosts();
+      const post=findBlogPost(decodeURIComponent(slug));
+      if(!post) throw new Error('Article not found');
+      const d=post.data||{};
+      document.getElementById('article-type').textContent=String(d.articleType||'blog').replace(/[-_]/g,' ').toUpperCase();
+      document.getElementById('article-title').textContent=d.title||'Untitled';
+      document.getElementById('article-date').textContent=formatBlogDate(d['post-date']||post.updatedAt||post.created_at);
+      const media=document.getElementById('article-media');
+      media.innerHTML=d.image?`<img class="blog-image" src="${escapeHtml(d.image)}" alt="" loading="eager">`:d.video?`<video class="blog-video" src="${escapeHtml(d.video)}" controls preload="metadata"></video>`:'';
+      const body=String(d.content||'');
+      document.getElementById('article-content').innerHTML=/<(?:p|h2|ul|ol|blockquote)\b/i.test(body)?sanitizeBlogHtml(body):escapeHtml(body).replace(/\n/g,'<br>');
+      const url=articleUrl(post);
+      document.getElementById('article-share-btn').onclick=async()=>{
+        if(navigator.share){try{await navigator.share({title:d.title||'Jabari Article',url});return;}catch(e){}}
+        try{await navigator.clipboard.writeText(url);alert('Article link copied.');}catch(e){window.prompt('Copy article link:',url);}
+      };
+      document.getElementById('article-copy-btn').onclick=async()=>{try{await navigator.clipboard.writeText(url);alert('Article link copied.');}catch(e){window.prompt('Copy article link:',url);}};
+    }catch(e){ document.getElementById('article-content').innerHTML='<p class="blog-empty">Could not open this article.</p>'; }
+  }
+
   function renderBlogPosts(){
     const listEl = document.getElementById('blog-list');
     if(!listEl) return;
@@ -1011,12 +1087,14 @@ async function loadShopProducts(){
       card.className = 'blog-card';
       const image = d.image ? `<img class="blog-image" src="${escapeHtml(d.image)}" alt="" loading="lazy" onerror="this.style.display='none'">` : '';
       const video = d.video ? `<video class="blog-video" src="${escapeHtml(d.video)}" controls preload="metadata"></video>` : '';
+      const slug=d.slug||item.id;
       card.innerHTML = `
         ${image}
         ${video}
         <p class="blog-date">${escapeHtml(formatBlogDate(date))}</p>
         <h3 class="blog-title">${escapeHtml(d.title || 'Untitled')}</h3>
-        <p class="blog-body">${escapeHtml(d.content || '')}</p>`;
+        <p class="blog-body">${escapeHtml(String(d.content || '').replace(/<[^>]+>/g,'').slice(0,260))}${String(d.content||'').length>260?'…':''}</p>
+        <a class="btn btn-outline" href="#blog/${encodeURIComponent(slug)}">Read Article →</a>`;
       listEl.appendChild(card);
     });
   }
@@ -1419,6 +1497,72 @@ preview.innerHTML = d.image
 
   document.getElementById('write-passcode').addEventListener('change', loadAdminPosts);
 
+  // ---------------- Editable Home Content ----------------
+  const HOME_PUBLIC_DATA_URL =
+    'https://raw.githubusercontent.com/jabarixai-dev/Jabari/main/home/content.json';
+
+  const HOME_DEFAULTS = {
+    logoUrl: '',
+    name: 'JABARI',
+    tagline: 'Website Designer · Graphics Designer · Computer Scientist',
+    socials: {
+      whatsapp: 'https://wa.me/2349031761024',
+      x: 'https://x.com/King_Jabari',
+      telegram: 'https://t.me/King_Jabari',
+      youtube: 'https://youtube.com/@king_jabari?si=ZTs8BNNN0XczyBEQ'
+    },
+    buttons: [
+      {text:'About', href:'#about'},
+      {text:'Reviews', href:'#reviews'},
+      {text:'Shop', href:'#shop'},
+      {text:'My Blogs', href:'#blogs'}
+    ],
+    footer: 'Africa · AI · Markets · Culture · Truth'
+  };
+
+  function applyHomeContent(home){
+    const data = home || HOME_DEFAULTS;
+    const nameEl = document.getElementById('home-name');
+    const taglineEl = document.getElementById('home-tagline');
+    const footerEl = document.getElementById('home-footer');
+    const logoEl = document.getElementById('home-logo');
+
+    if(nameEl) nameEl.innerHTML = escapeHtml(data.name || HOME_DEFAULTS.name) + '<span class="dot">.</span>';
+    if(taglineEl) taglineEl.textContent = data.tagline || HOME_DEFAULTS.tagline;
+    if(footerEl) footerEl.textContent = data.footer || HOME_DEFAULTS.footer;
+    if(logoEl && data.logoUrl) logoEl.src = data.logoUrl;
+
+    const socials = data.socials || {};
+    document.querySelectorAll('[data-home-social]').forEach(a => {
+      const key = a.dataset.homeSocial;
+      if(socials[key]) a.href = socials[key];
+    });
+
+    const buttons = Array.isArray(data.buttons) ? data.buttons : [];
+    document.querySelectorAll('[data-home-button]').forEach(a => {
+      const i = Number(a.dataset.homeButton);
+      const b = buttons[i];
+      if(!b) return;
+      a.textContent = b.text || '';
+      a.href = b.href || '#home';
+    });
+  }
+
+  async function loadHomeContent(){
+    try{
+      const res = await fetch(HOME_PUBLIC_DATA_URL + '?t=' + Date.now(), {cache:'no-store'});
+      if(!res.ok) throw new Error('Home content unavailable');
+      const data = await res.json();
+      applyHomeContent(data);
+    }catch(err){
+      // Keep the existing embedded Home content as a zero-delay fallback.
+      console.warn('Home content load failed:', err.message);
+      applyHomeContent(HOME_DEFAULTS);
+    }
+  }
+
+  loadHomeContent();
+
   // ---------------- Routing ----------------
   const views = {
     '': 'view-home',
@@ -1428,7 +1572,8 @@ preview.innerHTML = d.image
     'download': 'view-download',
     'reviews': 'view-reviews',
     'blogs': 'view-blogs',
-    'write': 'view-write'
+    'write': 'view-write',
+    'blog': 'view-blog-article'
   };
   const crumbHTML = {
     'view-home': 'Home',
@@ -1437,6 +1582,7 @@ preview.innerHTML = d.image
     'view-download': '<a href="#home">Home</a> / Shop / Download',
     'view-reviews': '<a href="#home">Home</a> / Reviews',
     'view-blogs': '<a href="#home">Home</a> / My Blogs',
+    'view-blog-article': '<a href="#blogs">Blog</a> / Article',
     'view-write': '<a href="#home">Home</a> / Blog Manager'
   };
 
@@ -1445,7 +1591,7 @@ preview.innerHTML = d.image
     const [pathPart, queryPart] = raw.split('?');
     const hash = pathPart.toLowerCase();
     const isAdminRoute = hash === 'write' && queryPart === 'admin=1';
-    const target = views[hash] || 'view-home';
+    const target = views[hash] || (hash.startsWith('blog/') ? 'view-blog-article' : 'view-home');
 
     // The Blog Manager is not part of the public navigation. It is only
     // reachable through the private admin route #write?admin=1 and still
@@ -1460,9 +1606,9 @@ preview.innerHTML = d.image
     document.getElementById('crumbs').innerHTML = crumbHTML[target];
     window.scrollTo(0,0);
 
-    if(target === 'view-shop'){
-      loadShopProducts().then(renderShop);
-    }
+   if(target === 'view-shop'){
+  loadShopProducts().then(renderShop);
+   }
     if(target === 'view-download'){
       const params = new URLSearchParams(queryPart || '');
       runDownloadVerification(params.get('ref'), params.get('product'));
@@ -1472,6 +1618,9 @@ preview.innerHTML = d.image
     }
     if(target === 'view-blogs'){
       loadBlogPosts();
+    }
+    if(target === 'view-blog-article'){
+      loadBlogPosts().then(()=>openBlogArticle(pathPart.slice(5)));
     }
     if(target === 'view-write'){
       // Posts are loaded after the admin passcode is entered.
