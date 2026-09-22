@@ -973,6 +973,24 @@ async function loadShopProducts(){
     return div.innerHTML;
   }
 
+  function decodeHtmlEntities(value){
+  const textarea = document.createElement('textarea');
+  textarea.innerHTML = String(value || '');
+  return textarea.value;
+}
+
+function normalizeBlogContent(value){
+  let text = String(value || '');
+
+  for(let i = 0; i < 3; i++){
+    const decoded = decodeHtmlEntities(text);
+    if(decoded === text) break;
+    text = decoded;
+  }
+
+  return text;
+}
+
   // ---------------- Blog Manager ----------------
   let blogItems = [];
   let editingSubmissionId = '';
@@ -1061,8 +1079,12 @@ async function loadShopProducts(){
       document.getElementById('article-date').textContent=formatBlogDate(d['post-date']||post.updatedAt||post.created_at);
       const media=document.getElementById('article-media');
       media.innerHTML=d.image?`<img class="blog-image" src="${escapeHtml(d.image)}" alt="" loading="eager">`:d.video?`<video class="blog-video" src="${escapeHtml(d.video)}" controls preload="metadata"></video>`:'';
-      const body=String(d.content||'');
-      document.getElementById('article-content').innerHTML=/<(?:p|h2|ul|ol|blockquote)\b/i.test(body)?sanitizeBlogHtml(body):escapeHtml(body).replace(/\n/g,'<br>');
+      const body = normalizeBlogContent(d.content || '');
+
+document.getElementById('article-content').innerHTML =
+  /<(?:p|h2|ul|ol|blockquote)\b/i.test(body)
+    ? sanitizeBlogHtml(body)
+    : escapeHtml(body).replace(/\n/g,'<br>');
       const url=articleUrl(post);
       document.getElementById('article-share-btn').onclick=async()=>{
         if(navigator.share){try{await navigator.share({title:d.title||'Jabari Article',url});return;}catch(e){}}
