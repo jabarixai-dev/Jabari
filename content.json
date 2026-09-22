@@ -1,0 +1,17 @@
+{
+  "bio": "I'm Jabari. I create professional digital experiences through website design, graphics design and technology, helping businesses, organizations and individuals present their work clearly and professionally.",
+  "services": [
+    {
+      "title": "Website Design",
+      "description": "Professional, responsive websites for businesses, schools, organizations, portfolios and personal brands."
+    },
+    {
+      "title": "Graphics Design",
+      "description": "Visual identities, promotional materials, social media graphics and product designs that help brands communicate clearly."
+    },
+    {
+      "title": "Computer Scientist",
+      "description": "Technology-driven solutions, software concepts and AI-assisted digital projects."
+    }
+  ]
+}

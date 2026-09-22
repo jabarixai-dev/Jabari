@@ -508,6 +508,7 @@
 
       <div class="home-buttons">
         <a href="#about" class="home-btn gold">About</a>
+        <a href="#about-manager?admin=1" class="home-btn">About Manager</a>
         <a href="#reviews" class="home-btn">Reviews</a>
         <a href="#shop" class="home-btn">Shop</a>
         <a href="#blogs" class="home-btn">My Blogs</a>
@@ -526,20 +527,13 @@
       <p class="role">Website Designer · Graphics Designer · Computer Scientist</p>
     </div>
 
-    <p class="bio">I'm Jabari. I create professional digital experiences through website design, graphics design and technology, helping businesses, organizations and individuals present their work clearly and professionally.</p>
+    <p class="bio" id="public-about-bio">I'm Jabari. I create professional digital experiences through website design, graphics design and technology, helping businesses, organizations and individuals present their work clearly and professionally.</p>
 
     <p class="section-label">Main Services</p>
-    <div class="status-card">
-      <p class="k">Website Design</p>
-      <p class="v">Professional, responsive websites for businesses, schools, organizations, portfolios and personal brands.</p>
-    </div>
-    <div class="status-card">
-      <p class="k">Graphics Design</p>
-      <p class="v">Visual identities, promotional materials, social media graphics and product designs that help brands communicate clearly.</p>
-    </div>
-    <div class="status-card">
-      <p class="k">Computer Scientist</p>
-      <p class="v">Technology-driven solutions, software concepts and AI-assisted digital projects.</p>
+    <div id="public-about-services">
+      <div class="status-card"><p class="k">Website Design</p><p class="v">Professional, responsive websites for businesses, schools, organizations, portfolios and personal brands.</p></div>
+      <div class="status-card"><p class="k">Graphics Design</p><p class="v">Visual identities, promotional materials, social media graphics and product designs that help brands communicate clearly.</p></div>
+      <div class="status-card"><p class="k">Computer Scientist</p><p class="v">Technology-driven solutions, software concepts and AI-assisted digital projects.</p></div>
     </div>
 
     <a href="#shop" class="btn btn-outline">Visit shop →</a>
@@ -714,6 +708,58 @@
 
     <footer class="foot">JABARI · Website Designer · Graphics Designer · Computer Scientist</footer>
   </section>
+
+  <!-- ============ ABOUT MANAGER ============ -->
+  <section class="view" id="view-about-manager">
+    <a href="#home" class="back-link" data-nav="home">← Back</a>
+    <div class="page-head">
+      <p class="eyebrow" style="margin-top:8px;">About Manager</p>
+      <h2>Manage About</h2>
+      <p>Edit the public About page. Changes are saved to the shared GitHub content used by the website and bot.</p>
+    </div>
+
+    <div class="admin-panel">
+      <p class="field-label">Admin passcode</p>
+      <input type="password" class="plain-input" id="about-passcode" placeholder="Passcode" autocomplete="current-password" />
+      <button type="button" class="btn btn-primary" id="about-load-btn">Load About Content</button>
+      <p class="shop-manager-msg" id="about-manager-msg"></p>
+    </div>
+
+    <div class="admin-panel" id="about-editor-panel" style="display:none;">
+      <p class="field-label">Bio</p>
+      <textarea class="plain-textarea" id="about-bio" style="min-height:140px;" placeholder="About you..."></textarea>
+
+      <p class="section-label" style="margin-top:22px;">Main Services</p>
+      <div class="shop-editor-grid">
+        <div>
+          <p class="field-label">Service 1 title</p>
+          <input type="text" class="plain-input" id="about-service-1-title" />
+          <p class="field-label" style="margin-top:10px;">Description</p>
+          <textarea class="plain-textarea" id="about-service-1-desc" style="min-height:110px;"></textarea>
+        </div>
+        <div>
+          <p class="field-label">Service 2 title</p>
+          <input type="text" class="plain-input" id="about-service-2-title" />
+          <p class="field-label" style="margin-top:10px;">Description</p>
+          <textarea class="plain-textarea" id="about-service-2-desc" style="min-height:110px;"></textarea>
+        </div>
+        <div>
+          <p class="field-label">Service 3 title</p>
+          <input type="text" class="plain-input" id="about-service-3-title" />
+          <p class="field-label" style="margin-top:10px;">Description</p>
+          <textarea class="plain-textarea" id="about-service-3-desc" style="min-height:110px;"></textarea>
+        </div>
+      </div>
+
+      <div class="blog-admin-actions">
+        <button type="button" class="btn btn-primary" id="about-save-btn">Save About</button>
+      </div>
+      <p class="shop-manager-msg" id="about-save-msg"></p>
+    </div>
+
+    <footer class="foot">JABARI · Website Designer · Graphics Designer · Computer Scientist</footer>
+  </section>
+
 
   <!-- ============ SHOP MANAGER ============ -->
   <section class="view" id="view-shop-manager">
@@ -1572,6 +1618,81 @@ preview.innerHTML = d.image
 
 
 
+  // ---------------- About Manager ----------------
+  const ABOUT_PUBLIC_URL = 'https://raw.githubusercontent.com/jabarixai-dev/Jabari/main/about/content.json';
+
+  function escapeAboutText(value){
+    return String(value || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+  }
+
+  async function loadPublicAbout(){
+    try{
+      const res = await fetch(ABOUT_PUBLIC_URL + '?v=' + Date.now(), {cache:'no-store'});
+      if(!res.ok) throw new Error('About unavailable');
+      const data = await res.json();
+      const bio = document.getElementById('public-about-bio');
+      const services = document.getElementById('public-about-services');
+      if(bio && data.bio) bio.textContent = data.bio;
+      if(services && Array.isArray(data.services)){
+        services.innerHTML = data.services.map(item => `
+          <div class="status-card"><p class="k">${escapeAboutText(item.title)}</p><p class="v">${escapeAboutText(item.description)}</p></div>
+        `).join('');
+      }
+    }catch(err){ console.warn('About content load failed:', err); }
+  }
+
+  function fillAboutEditor(data){
+    document.getElementById('about-bio').value = data.bio || '';
+    (data.services || []).slice(0,3).forEach((item, i) => {
+      const n=i+1;
+      document.getElementById('about-service-'+n+'-title').value=item.title||'';
+      document.getElementById('about-service-'+n+'-desc').value=item.description||'';
+    });
+  }
+
+  async function loadAboutEditor(){
+    const pass = document.getElementById('about-passcode').value.trim();
+    const msg = document.getElementById('about-manager-msg');
+    const panel = document.getElementById('about-editor-panel');
+    if(!pass){ msg.textContent='Enter the admin passcode.'; msg.className='shop-manager-msg error'; return; }
+    msg.textContent='Loading…'; msg.className='shop-manager-msg';
+    try{
+      const res = await fetch('/.netlify/functions/manage-about?passcode='+encodeURIComponent(pass), {cache:'no-store'});
+      const data = await res.json().catch(()=>({}));
+      if(!res.ok) throw new Error(data.error || 'Could not load About content.');
+      fillAboutEditor(data);
+      panel.style.display='block';
+      msg.textContent='About content loaded.'; msg.className='shop-manager-msg success';
+    }catch(err){ msg.textContent=err.message; msg.className='shop-manager-msg error'; panel.style.display='none'; }
+  }
+
+  async function saveAbout(){
+    const pass = document.getElementById('about-passcode').value.trim();
+    const msg = document.getElementById('about-save-msg');
+    const services = [1,2,3].map(n => ({
+      title: document.getElementById('about-service-'+n+'-title').value.trim(),
+      description: document.getElementById('about-service-'+n+'-desc').value.trim()
+    }));
+    if(!pass){ msg.textContent='Enter the admin passcode first.'; msg.className='shop-manager-msg error'; return; }
+    if(services.some(x => !x.title || !x.description)){ msg.textContent='Complete all three services.'; msg.className='shop-manager-msg error'; return; }
+    msg.textContent='Saving…'; msg.className='shop-manager-msg';
+    try{
+      const res = await fetch('/.netlify/functions/manage-about', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({passcode:pass, action:'save', data:{bio:document.getElementById('about-bio').value.trim(), services}})
+      });
+      const data = await res.json().catch(()=>({}));
+      if(!res.ok) throw new Error(data.error || 'Could not save About content.');
+      msg.textContent='About content saved successfully.'; msg.className='shop-manager-msg success';
+      loadPublicAbout();
+    }catch(err){ msg.textContent=err.message; msg.className='shop-manager-msg error'; }
+  }
+
+  document.getElementById('about-load-btn')?.addEventListener('click', loadAboutEditor);
+  document.getElementById('about-save-btn')?.addEventListener('click', saveAbout);
+  loadPublicAbout();
+
+
   // ---------------- Private Dashboard ----------------
   document.getElementById('dashboard-unlock-btn').addEventListener('click', async () => {
     const passcode = document.getElementById('dashboard-passcode').value.trim();
@@ -1956,7 +2077,8 @@ preview.innerHTML = d.image
     'write': 'view-write',
     'shop-manager': 'view-shop-manager',
     'reviews-manager': 'view-reviews-manager',
-    'dashboard': 'view-dashboard'
+    'dashboard': 'view-dashboard',
+    'about-manager': 'view-about-manager'
   };
   const crumbHTML = {
     'view-home': 'Home',
@@ -1968,20 +2090,21 @@ preview.innerHTML = d.image
     'view-write': '<a href="#home">Home</a> / Blog Manager',
     'view-shop-manager': '<a href="#home">Home</a> / Shop Manager',
     'view-reviews-manager': '<a href="#home">Home</a> / Reviews Manager',
-    'view-dashboard': '<a href="#home">Home</a> / Dashboard'
+    'view-dashboard': '<a href="#home">Home</a> / Dashboard',
+    'view-about-manager': '<a href="#home">Home</a> / About Manager'
   };
 
   function route(){
     const raw = window.location.hash.replace('#','');
     const [pathPart, queryPart] = raw.split('?');
     const hash = pathPart.toLowerCase();
-    const isAdminRoute = (hash === 'write' || hash === 'shop-manager' || hash === 'reviews-manager' || hash === 'dashboard') && queryPart === 'admin=1';
+    const isAdminRoute = (hash === 'write' || hash === 'shop-manager' || hash === 'reviews-manager' || hash === 'dashboard' || hash === 'about-manager') && queryPart === 'admin=1';
     const target = views[hash] || 'view-home';
 
     // The Blog Manager is not part of the public navigation. It is only
     // reachable through the private admin route #write?admin=1 and still
     // requires the server-side admin passcode for management actions.
-    if((hash === 'write' || hash === 'shop-manager' || hash === 'reviews-manager' || hash === 'dashboard') && !isAdminRoute){
+    if((hash === 'write' || hash === 'shop-manager' || hash === 'reviews-manager' || hash === 'dashboard' || hash === 'about-manager') && !isAdminRoute){
       window.location.hash = 'blogs';
       return;
     }
@@ -1991,6 +2114,9 @@ preview.innerHTML = d.image
     document.getElementById('crumbs').innerHTML = crumbHTML[target];
     window.scrollTo(0,0);
 
+    if(target === 'view-about'){
+      loadPublicAbout();
+    }
     if(target === 'view-shop'){
       loadShopProducts().then(renderShop);
     }
