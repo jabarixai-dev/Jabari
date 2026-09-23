@@ -14,18 +14,33 @@ exports.handler=async event=>{
     const current=await getPosts();
     const posts=current.posts;
     const id=String(p.postId||p.submissionId||'').trim();
+    const index=posts.findIndex(x=>String(x.id)===id);
+    const now=new Date();
+    let publishedAt=new Date(now);
 
-    // Keep a real timestamp even if an older client sends only YYYY-MM-DD.
-    let postDate = String(p.date || '').trim();
-    if(/^\\d{4}-\\d{2}-\\d{2}$/.test(postDate)){
-      const now = new Date();
-      const [year, month, day] = postDate.split('-').map(Number);
-      postDate = new Date(
-        year, month - 1, day,
-        now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds()
-      ).toISOString();
-    }else if(!postDate || Number.isNaN(new Date(postDate).getTime())){
-      postDate = new Date().toISOString();
+    if(index>=0){
+      const existing=posts[index]||{};
+      const supplied=String(p.date||'').trim();
+
+      // Preserve an existing real publish timestamp when editing.
+      if(existing.date && /T|\\d{2}:\\d{2}/.test(String(existing.date))){
+        publishedAt=new Date(existing.date);
+      }else if(existing.updatedAt){
+        publishedAt=new Date(existing.updatedAt);
+      }
+
+      // If the calendar date is changed, preserve the existing WAT clock time.
+      if(supplied && /^\\d{4}-\\d{2}-\\d{2}$/.test(supplied)){
+        const base=new Date(existing.date||existing.updatedAt||now);
+        const parts=new Intl.DateTimeFormat('en-CA',{
+          timeZone:'Africa/Lagos',
+          hour:'2-digit', minute:'2-digit', second:'2-digit', hourCycle:'h23'
+        }).formatToParts(base).reduce((o,x)=>(o[x.type]=x.value,o),{});
+        const hh=Number(parts.hour)||0, mm=Number(parts.minute)||0, ss=Number(parts.second)||0;
+        publishedAt=new Date(Date.parse(
+          `${supplied}T${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}+01:00`
+        ));
+      }
     }
 
     const post={
@@ -34,11 +49,10 @@ exports.handler=async event=>{
       content:String(p.content),
       image:String(p.imageUrl||''),
       video:String(p.videoUrl||''),
-      date:postDate,
-      updatedAt:new Date().toISOString(),
+      date:publishedAt.toISOString(),
+      updatedAt:now.toISOString(),
       articleType:String(p.articleType||'news').trim().toLowerCase()
     };
-    const index=posts.findIndex(x=>String(x.id)===post.id);
     if(index>=0) posts[index]=post; else posts.unshift(post);
     posts.sort((a,b)=>new Date(b.updatedAt||b.date||0)-new Date(a.updatedAt||a.date||0));
     await savePosts(posts,current.sha,index>=0?'Update blog post: '+post.title:'Publish blog post: '+post.title);
