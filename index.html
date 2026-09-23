@@ -455,7 +455,7 @@
   .blog-article-body p{margin:0 0 1rem;}
   .blog-article-body ul{padding-left:1.3rem;}
   .article-share{display:flex;gap:10px;flex-wrap:wrap;margin:24px 0;}
-  .blog-ad{margin:22px auto;padding:14px;border:1px dashed var(--hairline);color:var(--muted);text-align:center;font-size:.75rem;letter-spacing:.08em;max-width:860px;}\n  .blog-ad-dynamic{min-height:78px;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .blog-ad{margin:22px auto;padding:14px;border:1px dashed var(--hairline);color:var(--muted);text-align:center;font-size:.75rem;letter-spacing:.08em;max-width:860px;}
 </style>
 </head>
 <body>
@@ -1026,101 +1026,75 @@ function normalizeBlogContent(value){
 
   function formatBlogDate(value){
     if(!value) return '';
-    const d = new Date(value);
-    if(Number.isNaN(d.getTime())) return value;
-    return d.toLocaleDateString(undefined, {
-      year:'numeric',
-      month:'short',
-      day:'numeric'
-    }) + ' · ' + d.toLocaleTimeString(undefined, {
-      hour:'numeric',
-      minute:'2-digit'
+    const raw = String(value).trim();
+    const d = new Date(raw);
+    if(Number.isNaN(d.getTime())) return raw;
+    // Jabari publishes in Nigeria. Display timestamps explicitly in Africa/Lagos (WAT, UTC+1).
+    const hasTime = /T|\\d{2}:\\d{2}/.test(raw);
+    if(!hasTime) {
+      return d.toLocaleDateString('en-NG', {
+        timeZone:'Africa/Lagos',
+        year:'numeric', month:'short', day:'numeric'
+      });
+    }
+    return d.toLocaleDateString('en-NG', {
+      timeZone:'Africa/Lagos',
+      year:'numeric', month:'short', day:'numeric'
+    }) + ' · ' + d.toLocaleTimeString('en-NG', {
+      timeZone:'Africa/Lagos',
+      hour:'numeric', minute:'2-digit', hour12:true
     });
   }
 
-  function buildBlogTimestamp(dateValue, existingValue=''){
-    const selected = String(dateValue || '').trim();
-    if(!selected) return new Date().toISOString();
-
-    // Preserve an existing post's time when the editor is only saving
-    // changes on the same calendar date.
-    const existing = existingValue ? new Date(existingValue) : null;
-    if(existing && !Number.isNaN(existing.getTime()) &&
-       /^\d{4}-\d{2}-\d{2}$/.test(selected) &&
-       selected === [
-         existing.getFullYear(),
-         String(existing.getMonth()+1).padStart(2,'0'),
-         String(existing.getDate()).padStart(2,'0')
-       ].join('-')){
-      return existing.toISOString();
-    }
-
-    // The editor stores a date, so use the current local time for that
-    // selected date. This keeps the published timestamp meaningful.
-    if(/^\d{4}-\d{2}-\d{2}$/.test(selected)){
-      const now = new Date();
-      const parts = selected.split('-').map(Number);
-      const local = new Date(
-        parts[0], parts[1]-1, parts[2],
-        now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds()
-      );
-      return local.toISOString();
-    }
-
-    const parsed = new Date(selected);
-    return Number.isNaN(parsed.getTime()) ? new Date().toISOString() : parsed.toISOString();
+  function getBlogTimestamp(item){
+    const d = item?.data || {};
+    const raw = d['post-date'] || d.date || '';
+    // A date-only value has no publish time; fall back to the saved update/publish timestamp.
+    if(raw && /T|\\d{2}:\\d{2}/.test(String(raw))) return raw;
+    return d.updatedAt || item?.updatedAt || item?.created_at || raw;
   }
 
-  function addDynamicAdsterraSlot(container, label='Advertisement'){
-    if(!container) return;
-    container.innerHTML = '';
-    container.className = 'blog-ad blog-ad-dynamic';
-    container.setAttribute('aria-label', label);
-
-    const config = document.createElement('script');
-    config.text = `atOptions = {
-      'key' : '90b45ec2391a32195106283680cdfcf6',
-      'format' : 'iframe',
-      'height' : 50,
-      'width' : 320,
-      'params' : {}
-    };`;
-
-    const loader = document.createElement('script');
-    loader.src = 'https://www.highrevenueformat.com/90b45ec2391a32195106283680cdfcf6/invoke.js';
-    loader.async = false;
-
-    container.appendChild(config);
-    container.appendChild(loader);
+  function createBlogAdSlot(){
+    const wrap = document.createElement('div');
+    wrap.className = 'blog-ad blog-ad-auto';
+    wrap.setAttribute('aria-label','Advertisement');
+    wrap.innerHTML = '<div style="font-size:.7rem;opacity:.65;margin-bottom:6px;">Advertisement</div>';
+    try{
+      window.atOptions = {
+        key:'90b45ec2391a32195106283680cdfcf6',
+        format:'iframe',
+        height:50,
+        width:320,
+        params:{}
+      };
+      const script = document.createElement('script');
+      script.src = 'https://www.highrevenueformat.com/90b45ec2391a32195106283680cdfcf6/invoke.js';
+      script.async = false;
+      wrap.appendChild(script);
+    }catch(_){}
+    return wrap;
   }
 
-  function addLongNewsAd(){
-    const article = document.getElementById('article-content');
-    if(!article) return;
+  function addAutomaticArticleAds(articleEl, postData){
+    if(!articleEl) return;
+    const type = String(postData?.articleType || postData?.category || '').toLowerCase();
+    const textLength = articleEl.textContent.trim().length;
+    const paragraphs = [...articleEl.children].filter(el => /^(P|H2|H3|UL|OL|BLOCKQUOTE)$/i.test(el.tagName));
+    const isNews = type === 'news' || type.includes('news');
+    if(!isNews) return;
 
-    const old = document.getElementById('article-mid-ad');
-    if(old) old.remove();
+    // Long news posts get up to two extra in-article placements. Short posts keep the
+    // existing fixed placements only.
+    if(textLength < 1400 && paragraphs.length < 6) return;
 
-    const type = String(document.getElementById('article-type')?.textContent || '').toLowerCase();
-    const textLength = article.textContent.trim().length;
-    const blocks = Array.from(article.children);
+    const insertAfter = [];
+    if(paragraphs.length >= 6) insertAfter.push(2);
+    if(textLength >= 2800 || paragraphs.length >= 10) insertAfter.push(6);
 
-    // Keep short opportunities/news articles clean. Long news articles
-    // get one additional in-content Adsterra slot.
-    const isNews = type.includes('news');
-    const isLong = textLength >= 4500 || blocks.length >= 8;
-    if(!isNews || !isLong) return;
-
-    const ad = document.createElement('div');
-    ad.id = 'article-mid-ad';
-    addDynamicAdsterraSlot(ad);
-
-    if(blocks.length >= 2){
-      const midpoint = Math.max(1, Math.floor(blocks.length / 2));
-      blocks[midpoint - 1].after(ad);
-    }else{
-      article.appendChild(ad);
-    }
+    insertAfter.reverse().forEach(index => {
+      const target = paragraphs[index];
+      if(target && target.parentNode) target.parentNode.insertBefore(createBlogAdSlot(), target.nextSibling);
+    });
   }
 
   const BLOG_PUBLIC_DATA_URL = 'https://raw.githubusercontent.com/jabarixai-dev/Jabari/main/blog/posts.json';
@@ -1143,7 +1117,7 @@ function normalizeBlogContent(value){
           content: item.content || '',
           image: item.image || '',
           video: item.video || '',
-          'post-date': item.date || '',
+          'post-date': item.date || item.updatedAt || '',
           updatedAt: item.updatedAt || '',
           slug: item.slug || item.id || '',
           articleType: item.articleType || item.category || 'blog'
@@ -1242,18 +1216,17 @@ function normalizeBlogContent(value){
       const d=post.data||{};
       document.getElementById('article-type').textContent=String(d.articleType||'blog').replace(/[-_]/g,' ').toUpperCase();
       document.getElementById('article-title').textContent=d.title||'Untitled';
-      document.getElementById('article-date').textContent=formatBlogDate(d['post-date']||post.updatedAt||post.created_at);
+      document.getElementById('article-date').textContent=formatBlogDate(getBlogTimestamp(post));
       const media=document.getElementById('article-media');
       media.innerHTML=d.image?`<img class="blog-image" src="${escapeHtml(d.image)}" alt="" loading="eager">`:d.video?`<video class="blog-video" src="${escapeHtml(d.video)}" controls preload="metadata"></video>`:'';
       const body = normalizeBlogContent(d.content || '');
 
-      document.getElementById('article-content').innerHTML =
+const articleEl = document.getElementById('article-content');
+      articleEl.innerHTML =
         /<(?:p|h2|ul|ol|blockquote)\b/i.test(body)
           ? sanitizeBlogHtml(body)
           : renderPlainBlogContent(body);
-
-      addLongNewsAd();
-
+      addAutomaticArticleAds(articleEl, d);
       const url=articleUrl(post);
       document.getElementById('article-share-btn').onclick=async()=>{
         if(navigator.share){try{await navigator.share({title:d.title||'Jabari Article',url});return;}catch(e){}}
@@ -1273,7 +1246,7 @@ function normalizeBlogContent(value){
     listEl.innerHTML = '';
     blogItems.forEach(item => {
       const d = item.data || {};
-      const date = d['post-date'] || item.created_at;
+      const date = getBlogTimestamp(item);
       const card = document.createElement('article');
       card.className = 'blog-card';
       const image = d.image ? `<img class="blog-image" src="${escapeHtml(d.image)}" alt="" loading="lazy" onerror="this.style.display='none'">` : '';
@@ -1635,12 +1608,7 @@ preview.innerHTML = d.image
     const passcode = document.getElementById('write-passcode').value.trim();
     const title = document.getElementById('write-title').value.trim();
     const content = document.getElementById('write-content').value.trim();
-    const selectedDate = document.getElementById('write-date').value;
-    const existingItem = editingSubmissionId
-      ? blogItems.find(x => x.id === editingSubmissionId)
-      : null;
-    const existingDate = existingItem?.data?.['post-date'] || existingItem?.created_at || '';
-    const date = buildBlogTimestamp(selectedDate, existingDate);
+    const date = document.getElementById('write-date').value;
     const msgEl = document.getElementById('write-msg');
     const preview = document.getElementById('write-media-preview');
     const selectedMedia = preview._prepared || null;
