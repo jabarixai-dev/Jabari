@@ -21,6 +21,8 @@ exports.handler=async event=>{
       image:String(p.imageUrl||''),
       video:String(p.videoUrl||''),
       date:String(p.date||new Date().toISOString().slice(0,10)),
+      publishedAt:String(p.publishedAt || p.date || new Date().toISOString()),
+      articleType:String(p.articleType||'news'),
       updatedAt:new Date().toISOString()
     };
     const index=posts.findIndex(x=>String(x.id)===post.id);
