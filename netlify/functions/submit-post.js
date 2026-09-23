@@ -14,45 +14,18 @@ exports.handler=async event=>{
     const current=await getPosts();
     const posts=current.posts;
     const id=String(p.postId||p.submissionId||'').trim();
-    const index=posts.findIndex(x=>String(x.id)===id);
-    const now=new Date();
-    let publishedAt=new Date(now);
-
-    if(index>=0){
-      const existing=posts[index]||{};
-      const supplied=String(p.date||'').trim();
-
-      // Preserve an existing real publish timestamp when editing.
-      if(existing.date && /T|\\d{2}:\\d{2}/.test(String(existing.date))){
-        publishedAt=new Date(existing.date);
-      }else if(existing.updatedAt){
-        publishedAt=new Date(existing.updatedAt);
-      }
-
-      // If the calendar date is changed, preserve the existing WAT clock time.
-      if(supplied && /^\\d{4}-\\d{2}-\\d{2}$/.test(supplied)){
-        const base=new Date(existing.date||existing.updatedAt||now);
-        const parts=new Intl.DateTimeFormat('en-CA',{
-          timeZone:'Africa/Lagos',
-          hour:'2-digit', minute:'2-digit', second:'2-digit', hourCycle:'h23'
-        }).formatToParts(base).reduce((o,x)=>(o[x.type]=x.value,o),{});
-        const hh=Number(parts.hour)||0, mm=Number(parts.minute)||0, ss=Number(parts.second)||0;
-        publishedAt=new Date(Date.parse(
-          `${supplied}T${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}+01:00`
-        ));
-      }
-    }
-
     const post={
       id:id||`post-${Date.now()}-${Math.random().toString(36).slice(2,8)}`,
       title:String(p.title).trim(),
       content:String(p.content),
       image:String(p.imageUrl||''),
       video:String(p.videoUrl||''),
-      date:publishedAt.toISOString(),
-      updatedAt:now.toISOString(),
+      date:String(p.date||new Date().toISOString()),
+      updatedAt:new Date().toISOString(),
+      publishedAt:new Date().toISOString(),
       articleType:String(p.articleType||'news').trim().toLowerCase()
     };
+    const index=posts.findIndex(x=>String(x.id)===post.id);
     if(index>=0) posts[index]=post; else posts.unshift(post);
     posts.sort((a,b)=>new Date(b.updatedAt||b.date||0)-new Date(a.updatedAt||a.date||0));
     await savePosts(posts,current.sha,index>=0?'Update blog post: '+post.title:'Publish blog post: '+post.title);
