@@ -455,7 +455,7 @@
   .blog-article-body p{margin:0 0 1rem;}
   .blog-article-body ul{padding-left:1.3rem;}
   .article-share{display:flex;gap:10px;flex-wrap:wrap;margin:24px 0;}
-  .blog-ad{display:none;margin:22px auto;padding:0;border:0;color:inherit;text-align:center;font-size:0;line-height:0;max-width:860px;}.blog-ad.ad-ready{display:block;}.blog-ad iframe{display:block;margin:0 auto;border:0;}
+  .blog-ad{display:block;margin:0 auto;padding:0;border:0;color:inherit;text-align:center;font-size:0;line-height:0;max-width:860px;min-height:0;}.blog-ad iframe{display:block;margin:22px auto;border:0;}
 </style>
 </head>
 <body>
@@ -616,6 +616,11 @@
     <div id="article-media"></div>
     <div class="blog-ad" aria-hidden="true"><script>atOptions = { 'key' : '90b45ec2391a32195106283680cdfcf6', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} };</script><script src="https://www.highrevenueformat.com/90b45ec2391a32195106283680cdfcf6/invoke.js"></script></div>
     <article class="blog-article-body" id="article-content"></article>
+    <div id="preloaded-blog-ads" aria-hidden="true" style="display:contents">
+      <div class="blog-ad extra-blog-ad"><script>atOptions = { 'key' : '90b45ec2391a32195106283680cdfcf6', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} };</script><script src="https://www.highrevenueformat.com/90b45ec2391a32195106283680cdfcf6/invoke.js"></script></div>
+      <div class="blog-ad extra-blog-ad"><script>atOptions = { 'key' : '90b45ec2391a32195106283680cdfcf6', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} };</script><script src="https://www.highrevenueformat.com/90b45ec2391a32195106283680cdfcf6/invoke.js"></script></div>
+      <div class="blog-ad extra-blog-ad"><script>atOptions = { 'key' : '90b45ec2391a32195106283680cdfcf6', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} };</script><script src="https://www.highrevenueformat.com/90b45ec2391a32195106283680cdfcf6/invoke.js"></script></div>
+    </div>
     <div class="article-share">
       <button type="button" class="btn btn-primary" id="article-share-btn">↗ Share Article</button>
       <button type="button" class="btn btn-outline" id="article-copy-btn">Copy Link</button>
@@ -1109,28 +1114,17 @@ function normalizeBlogContent(value){
   function findBlogPost(slug){
     return blogItems.find(x=>String(x?.data?.slug||x?.id||'')===String(slug));
   }
-  function watchAdSlot(slot){
-    if(!slot) return;
-    const ready=()=>{ const iframe=slot.querySelector('iframe'); if(iframe){ slot.classList.add('ad-ready'); return true; } return false; };
-    if(ready()) return;
-    const observer=new MutationObserver(()=>{ if(ready()) observer.disconnect(); });
-    observer.observe(slot,{childList:true,subtree:true});
-  }
-  function initBlogAdSlots(){ document.querySelectorAll('.blog-ad').forEach(watchAdSlot); }
-  function createWorkingAdSlot(){
-    const slot=document.createElement('div'); slot.className='blog-ad'; slot.setAttribute('aria-hidden','true');
-    const config=document.createElement('script'); config.textContent="atOptions = { 'key' : '90b45ec2391a32195106283680cdfcf6', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} };";
-    const invoke=document.createElement('script'); invoke.src='https://www.highrevenueformat.com/90b45ec2391a32195106283680cdfcf6/invoke.js';
-    slot.appendChild(config); slot.appendChild(invoke); watchAdSlot(slot); return slot;
-  }
   function addLongNewsAds(contentEl, articleType){
     if(!contentEl || String(articleType||'').toLowerCase()!=='news') return;
-    const text=contentEl.textContent.trim();
     const blocks=Array.from(contentEl.children).filter(el=>/^(P|H2|H3|UL|OL|BLOCKQUOTE)$/i.test(el.tagName));
-    let slots=0; if(text.length>=7000 || blocks.length>=24) slots=3; else if(text.length>=4000 || blocks.length>=15) slots=2; else if(text.length>=1800 || blocks.length>=8) slots=1;
-    if(!slots) return;
-    const positions=slots===1?[Math.min(5,blocks.length-1)]:slots===2?[Math.min(5,blocks.length-1),Math.min(11,blocks.length-1)]:[Math.min(5,blocks.length-1),Math.min(11,blocks.length-1),Math.min(18,blocks.length-1)];
-    [...new Set(positions)].sort((a,b)=>b-a).forEach(i=>{ const ref=blocks[i]; if(ref?.parentNode) ref.parentNode.insertBefore(createWorkingAdSlot(),ref.nextSibling); });
+    if(blocks.length < 4) return;
+    const count = blocks.length >= 10 ? 3 : (blocks.length >= 7 ? 2 : 1);
+    const slots=Array.from(document.querySelectorAll('#preloaded-blog-ads .extra-blog-ad')).slice(0,count);
+    const positions=[2,5,8];
+    slots.forEach((slot,i)=>{
+      const ref=blocks[Math.min(positions[i],blocks.length-1)];
+      if(ref && ref.parentNode) ref.parentNode.insertBefore(slot,ref.nextSibling);
+    });
   }
 
   async function openBlogArticle(slug){
