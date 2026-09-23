@@ -20,10 +20,9 @@ exports.handler=async event=>{
       content:String(p.content),
       image:String(p.imageUrl||''),
       video:String(p.videoUrl||''),
-      date:String(p.date||new Date().toISOString().slice(0,10)),
-      publishedAt:String(p.publishedAt || p.date || new Date().toISOString()),
-      articleType:String(p.articleType||'news'),
-      updatedAt:new Date().toISOString()
+      date:String(p.date||new Date().toISOString()),
+      updatedAt:new Date().toISOString(),
+      articleType:String(p.articleType||'news').trim().toLowerCase()
     };
     const index=posts.findIndex(x=>String(x.id)===post.id);
     if(index>=0) posts[index]=post; else posts.unshift(post);
