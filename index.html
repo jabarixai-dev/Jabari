@@ -455,7 +455,7 @@
   .blog-article-body p{margin:0 0 1rem;}
   .blog-article-body ul{padding-left:1.3rem;}
   .article-share{display:flex;gap:10px;flex-wrap:wrap;margin:24px 0;}
-  .blog-ad{margin:22px auto;padding:0;border:0;max-width:860px;min-height:0;text-align:center;line-height:0;}
+  .blog-ad{display:none;margin:22px auto;padding:0;border:0;color:inherit;text-align:center;font-size:0;line-height:0;max-width:860px;}.blog-ad.ad-ready{display:block;}.blog-ad iframe{display:block;margin:0 auto;border:0;}
 </style>
 </head>
 <body>
@@ -614,47 +614,14 @@
       <p id="article-date" class="blog-date"></p>
     </div>
     <div id="article-media"></div>
-    <div class="blog-ad">
-  <script>
-    atOptions = {
-      'key' : '90b45ec2391a32195106283680cdfcf6',
-      'format' : 'iframe',
-      'height' : 50,
-      'width' : 320,
-      'params' : {}
-    };
-  </script>
-  <script src="https://www.highrevenueformat.com/90b45ec2391a32195106283680cdfcf6/invoke.js"></script>
-    </div>
+    <div class="blog-ad" aria-hidden="true"><script>atOptions = { 'key' : '90b45ec2391a32195106283680cdfcf6', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} };</script><script src="https://www.highrevenueformat.com/90b45ec2391a32195106283680cdfcf6/invoke.js"></script></div>
     <article class="blog-article-body" id="article-content"></article>
     <div class="article-share">
       <button type="button" class="btn btn-primary" id="article-share-btn">↗ Share Article</button>
-      <div class="blog-ad">
-  <script>
-    atOptions = {
-      'key' : '90b45ec2391a32195106283680cdfcf6',
-      'format' : 'iframe',
-      'height' : 50,
-      'width' : 320,
-      'params' : {}
-    };
-  </script>
-  <script src="https://www.highrevenueformat.com/90b45ec2391a32195106283680cdfcf6/invoke.js"></script>
-      </div>
       <button type="button" class="btn btn-outline" id="article-copy-btn">Copy Link</button>
     </div>
-    <div class="blog-ad">
-  <script>
-    atOptions = {
-      'key' : '90b45ec2391a32195106283680cdfcf6',
-      'format' : 'iframe',
-      'height' : 50,
-      'width' : 320,
-      'params' : {}
-    };
-  </script>
-  <script src="https://www.highrevenueformat.com/90b45ec2391a32195106283680cdfcf6/invoke.js"></script>
-</div>
+    <div class="blog-ad" aria-hidden="true"><script>atOptions = { 'key' : '90b45ec2391a32195106283680cdfcf6', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} };</script><script src="https://www.highrevenueformat.com/90b45ec2391a32195106283680cdfcf6/invoke.js"></script></div>
+    <div class="blog-ad" aria-hidden="true"><script>atOptions = { 'key' : '90b45ec2391a32195106283680cdfcf6', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} };</script><script src="https://www.highrevenueformat.com/90b45ec2391a32195106283680cdfcf6/invoke.js"></script></div>
     <footer class="foot">JABARI · Website Designer · Graphics Designer · Computer Scientist</footer>
   </section>
 
@@ -1028,66 +995,7 @@ function normalizeBlogContent(value){
     if(!value) return '';
     const d = new Date(value);
     if(Number.isNaN(d.getTime())) return value;
-    return new Intl.DateTimeFormat('en-NG', {
-      timeZone: 'Africa/Lagos',
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false
-    }).format(d);
-  }
-
-  // Always use the post's real timestamp (updatedAt) for the visible Blog time.
-  function blogPostTimestamp(item){
-    const d = item?.data || {};
-    return item?.updatedAt || d.updatedAt || item?.created_at || d['post-date'] || '';
-  }
-
-  function createAdsterraSlot(){
-    const wrap = document.createElement('div');
-    wrap.className = 'blog-ad blog-ad-auto';
-        const config = document.createElement('script');
-    config.text = `atOptions = {
-      'key' : '90b45ec2391a32195106283680cdfcf6',
-      'format' : 'iframe',
-      'height' : 50,
-      'width' : 320,
-      'params' : {}
-    };`;
-    const loader = document.createElement('script');
-    loader.src = 'https://www.highrevenueformat.com/90b45ec2391a32195106283680cdfcf6/invoke.js';
-    loader.async = false;
-    wrap.appendChild(config);
-    wrap.appendChild(loader);
-    return wrap;
-  }
-
-  function insertLongArticleAds(article, articleType){
-    if(!article) return;
-    article.querySelectorAll('.blog-ad-auto').forEach(el => el.remove());
-    const type = String(articleType || '').toLowerCase();
-    const textLength = (article.textContent || '').trim().length;
-    const blocks = Array.from(article.children).filter(el => {
-      const tag = el.tagName;
-      return ['P','H2','H3','UL','OL','BLOCKQUOTE'].includes(tag) && (el.textContent || '').trim().length > 40;
-    });
-    const isNews = !type || type === 'news' || type.includes('news');
-    if(!isNews || blocks.length < 6 || textLength < 1800) return;
-
-    const count = textLength >= 7000 && blocks.length >= 14 ? 3 :
-                  textLength >= 4200 && blocks.length >= 10 ? 2 : 1;
-    const positions = count === 3 ? [0.25,0.52,0.78] : count === 2 ? [0.36,0.70] : [0.55];
-    positions.slice().reverse().forEach(ratio => {
-      const candidates = Array.from(article.children).filter(el => {
-        const tag = el.tagName;
-        return ['P','H2','H3','UL','OL','BLOCKQUOTE'].includes(tag) && (el.textContent || '').trim().length > 40;
-      });
-      const pos = Math.max(1, Math.min(candidates.length, Math.round(candidates.length * ratio)));
-      const target = candidates[pos - 1];
-      if(target) target.insertAdjacentElement('afterend', createAdsterraSlot());
-    });
+    return d.toLocaleDateString(undefined, {year:'numeric',month:'short',day:'numeric'});
   }
 
   const BLOG_PUBLIC_DATA_URL = 'https://raw.githubusercontent.com/jabarixai-dev/Jabari/main/blog/posts.json';
@@ -1201,6 +1109,30 @@ function normalizeBlogContent(value){
   function findBlogPost(slug){
     return blogItems.find(x=>String(x?.data?.slug||x?.id||'')===String(slug));
   }
+  function watchAdSlot(slot){
+    if(!slot) return;
+    const ready=()=>{ const iframe=slot.querySelector('iframe'); if(iframe){ slot.classList.add('ad-ready'); return true; } return false; };
+    if(ready()) return;
+    const observer=new MutationObserver(()=>{ if(ready()) observer.disconnect(); });
+    observer.observe(slot,{childList:true,subtree:true});
+  }
+  function initBlogAdSlots(){ document.querySelectorAll('.blog-ad').forEach(watchAdSlot); }
+  function createWorkingAdSlot(){
+    const slot=document.createElement('div'); slot.className='blog-ad'; slot.setAttribute('aria-hidden','true');
+    const config=document.createElement('script'); config.textContent="atOptions = { 'key' : '90b45ec2391a32195106283680cdfcf6', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} };";
+    const invoke=document.createElement('script'); invoke.src='https://www.highrevenueformat.com/90b45ec2391a32195106283680cdfcf6/invoke.js';
+    slot.appendChild(config); slot.appendChild(invoke); watchAdSlot(slot); return slot;
+  }
+  function addLongNewsAds(contentEl, articleType){
+    if(!contentEl || String(articleType||'').toLowerCase()!=='news') return;
+    const text=contentEl.textContent.trim();
+    const blocks=Array.from(contentEl.children).filter(el=>/^(P|H2|H3|UL|OL|BLOCKQUOTE)$/i.test(el.tagName));
+    let slots=0; if(text.length>=7000 || blocks.length>=24) slots=3; else if(text.length>=4000 || blocks.length>=15) slots=2; else if(text.length>=1800 || blocks.length>=8) slots=1;
+    if(!slots) return;
+    const positions=slots===1?[Math.min(5,blocks.length-1)]:slots===2?[Math.min(5,blocks.length-1),Math.min(11,blocks.length-1)]:[Math.min(5,blocks.length-1),Math.min(11,blocks.length-1),Math.min(18,blocks.length-1)];
+    [...new Set(positions)].sort((a,b)=>b-a).forEach(i=>{ const ref=blocks[i]; if(ref?.parentNode) ref.parentNode.insertBefore(createWorkingAdSlot(),ref.nextSibling); });
+  }
+
   async function openBlogArticle(slug){
     try{
       if(!blogItems.length) await fetchBlogPosts();
@@ -1209,7 +1141,7 @@ function normalizeBlogContent(value){
       const d=post.data||{};
       document.getElementById('article-type').textContent=String(d.articleType||'blog').replace(/[-_]/g,' ').toUpperCase();
       document.getElementById('article-title').textContent=d.title||'Untitled';
-      document.getElementById('article-date').textContent=formatBlogDate(blogPostTimestamp(post));
+      document.getElementById('article-date').textContent=formatBlogDate(d['post-date']||post.updatedAt||post.created_at);
       const media=document.getElementById('article-media');
       media.innerHTML=d.image?`<img class="blog-image" src="${escapeHtml(d.image)}" alt="" loading="eager">`:d.video?`<video class="blog-video" src="${escapeHtml(d.video)}" controls preload="metadata"></video>`:'';
       const body = normalizeBlogContent(d.content || '');
@@ -1218,7 +1150,7 @@ document.getElementById('article-content').innerHTML =
   /<(?:p|h2|ul|ol|blockquote)\b/i.test(body)
     ? sanitizeBlogHtml(body)
     : renderPlainBlogContent(body);
-      insertLongArticleAds(document.getElementById('article-content'), d.articleType || 'news');
+      addLongNewsAds(document.getElementById('article-content'), d.articleType);
       const url=articleUrl(post);
       document.getElementById('article-share-btn').onclick=async()=>{
         if(navigator.share){try{await navigator.share({title:d.title||'Jabari Article',url});return;}catch(e){}}
@@ -1238,7 +1170,7 @@ document.getElementById('article-content').innerHTML =
     listEl.innerHTML = '';
     blogItems.forEach(item => {
       const d = item.data || {};
-      const date = blogPostTimestamp(item);
+      const date = d['post-date'] || item.created_at;
       const card = document.createElement('article');
       card.className = 'blog-card';
       const image = d.image ? `<img class="blog-image" src="${escapeHtml(d.image)}" alt="" loading="lazy" onerror="this.style.display='none'">` : '';
@@ -1317,7 +1249,7 @@ document.getElementById('article-content').innerHTML =
       row.className = 'admin-post-row';
       row.innerHTML = `
         <strong>${escapeHtml(d.title || 'Untitled')}</strong>
-        <div class="admin-post-meta">${escapeHtml(formatBlogDate(blogPostTimestamp(item)))}${d.image ? ' · 🖼️ Image' : ''}${d.video ? ' · 🎥 Video' : ''}</div>
+        <div class="admin-post-meta">${escapeHtml(formatBlogDate(d['post-date'] || item.created_at))}${d.image ? ' · 🖼️ Image' : ''}${d.video ? ' · 🎥 Video' : ''}</div>
         <div class="admin-post-buttons">
           <button type="button" class="btn btn-outline" data-edit-id="${escapeHtml(item.id || '')}">Edit</button>
           <button type="button" class="btn btn-outline" data-delete-id="${escapeHtml(item.id || '')}">Delete</button>
