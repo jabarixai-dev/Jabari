@@ -455,7 +455,7 @@
   .blog-article-body p{margin:0 0 1rem;}
   .blog-article-body ul{padding-left:1.3rem;}
   .article-share{display:flex;gap:10px;flex-wrap:wrap;margin:24px 0;}
-  .blog-ad{margin:22px auto;padding:14px;border:1px dashed var(--hairline);color:var(--muted);text-align:center;font-size:.75rem;letter-spacing:.08em;max-width:860px;}
+  .blog-ad{margin:22px auto;padding:14px;border:1px dashed var(--hairline);color:var(--muted);text-align:center;font-size:.75rem;letter-spacing:.08em;max-width:860px;}\n  .blog-ad-dynamic{min-height:78px;display:flex;align-items:center;justify-content:center;overflow:hidden;}
 </style>
 </head>
 <body>
@@ -1028,7 +1028,99 @@ function normalizeBlogContent(value){
     if(!value) return '';
     const d = new Date(value);
     if(Number.isNaN(d.getTime())) return value;
-    return d.toLocaleDateString(undefined, {year:'numeric',month:'short',day:'numeric'});
+    return d.toLocaleDateString(undefined, {
+      year:'numeric',
+      month:'short',
+      day:'numeric'
+    }) + ' · ' + d.toLocaleTimeString(undefined, {
+      hour:'numeric',
+      minute:'2-digit'
+    });
+  }
+
+  function buildBlogTimestamp(dateValue, existingValue=''){
+    const selected = String(dateValue || '').trim();
+    if(!selected) return new Date().toISOString();
+
+    // Preserve an existing post's time when the editor is only saving
+    // changes on the same calendar date.
+    const existing = existingValue ? new Date(existingValue) : null;
+    if(existing && !Number.isNaN(existing.getTime()) &&
+       /^\d{4}-\d{2}-\d{2}$/.test(selected) &&
+       selected === [
+         existing.getFullYear(),
+         String(existing.getMonth()+1).padStart(2,'0'),
+         String(existing.getDate()).padStart(2,'0')
+       ].join('-')){
+      return existing.toISOString();
+    }
+
+    // The editor stores a date, so use the current local time for that
+    // selected date. This keeps the published timestamp meaningful.
+    if(/^\d{4}-\d{2}-\d{2}$/.test(selected)){
+      const now = new Date();
+      const parts = selected.split('-').map(Number);
+      const local = new Date(
+        parts[0], parts[1]-1, parts[2],
+        now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds()
+      );
+      return local.toISOString();
+    }
+
+    const parsed = new Date(selected);
+    return Number.isNaN(parsed.getTime()) ? new Date().toISOString() : parsed.toISOString();
+  }
+
+  function addDynamicAdsterraSlot(container, label='Advertisement'){
+    if(!container) return;
+    container.innerHTML = '';
+    container.className = 'blog-ad blog-ad-dynamic';
+    container.setAttribute('aria-label', label);
+
+    const config = document.createElement('script');
+    config.text = `atOptions = {
+      'key' : '90b45ec2391a32195106283680cdfcf6',
+      'format' : 'iframe',
+      'height' : 50,
+      'width' : 320,
+      'params' : {}
+    };`;
+
+    const loader = document.createElement('script');
+    loader.src = 'https://www.highrevenueformat.com/90b45ec2391a32195106283680cdfcf6/invoke.js';
+    loader.async = false;
+
+    container.appendChild(config);
+    container.appendChild(loader);
+  }
+
+  function addLongNewsAd(){
+    const article = document.getElementById('article-content');
+    if(!article) return;
+
+    const old = document.getElementById('article-mid-ad');
+    if(old) old.remove();
+
+    const type = String(document.getElementById('article-type')?.textContent || '').toLowerCase();
+    const textLength = article.textContent.trim().length;
+    const blocks = Array.from(article.children);
+
+    // Keep short opportunities/news articles clean. Long news articles
+    // get one additional in-content Adsterra slot.
+    const isNews = type.includes('news');
+    const isLong = textLength >= 4500 || blocks.length >= 8;
+    if(!isNews || !isLong) return;
+
+    const ad = document.createElement('div');
+    ad.id = 'article-mid-ad';
+    addDynamicAdsterraSlot(ad);
+
+    if(blocks.length >= 2){
+      const midpoint = Math.max(1, Math.floor(blocks.length / 2));
+      blocks[midpoint - 1].after(ad);
+    }else{
+      article.appendChild(ad);
+    }
   }
 
   const BLOG_PUBLIC_DATA_URL = 'https://raw.githubusercontent.com/jabarixai-dev/Jabari/main/blog/posts.json';
@@ -1155,10 +1247,13 @@ function normalizeBlogContent(value){
       media.innerHTML=d.image?`<img class="blog-image" src="${escapeHtml(d.image)}" alt="" loading="eager">`:d.video?`<video class="blog-video" src="${escapeHtml(d.video)}" controls preload="metadata"></video>`:'';
       const body = normalizeBlogContent(d.content || '');
 
-document.getElementById('article-content').innerHTML =
-  /<(?:p|h2|ul|ol|blockquote)\b/i.test(body)
-    ? sanitizeBlogHtml(body)
-    : renderPlainBlogContent(body);
+      document.getElementById('article-content').innerHTML =
+        /<(?:p|h2|ul|ol|blockquote)\b/i.test(body)
+          ? sanitizeBlogHtml(body)
+          : renderPlainBlogContent(body);
+
+      addLongNewsAd();
+
       const url=articleUrl(post);
       document.getElementById('article-share-btn').onclick=async()=>{
         if(navigator.share){try{await navigator.share({title:d.title||'Jabari Article',url});return;}catch(e){}}
@@ -1540,7 +1635,12 @@ preview.innerHTML = d.image
     const passcode = document.getElementById('write-passcode').value.trim();
     const title = document.getElementById('write-title').value.trim();
     const content = document.getElementById('write-content').value.trim();
-    const date = document.getElementById('write-date').value;
+    const selectedDate = document.getElementById('write-date').value;
+    const existingItem = editingSubmissionId
+      ? blogItems.find(x => x.id === editingSubmissionId)
+      : null;
+    const existingDate = existingItem?.data?.['post-date'] || existingItem?.created_at || '';
+    const date = buildBlogTimestamp(selectedDate, existingDate);
     const msgEl = document.getElementById('write-msg');
     const preview = document.getElementById('write-media-preview');
     const selectedMedia = preview._prepared || null;
