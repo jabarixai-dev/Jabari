@@ -1,5 +1,14 @@
 [
   {
+    "id": "post-1790150753918-33i29b",
+    "title": "Immunefi Web3 Bug Bounty Programs",
+    "content": "<p>Security researchers can analyze live Web3 protocol code on Immunefi to identify and responsibly report vulnerabilities before attackers exploit them. Whitehat hackers receive financial bounty rewards scaled to vulnerability severity, with over $125 million paid out to date across participating programs.</p>\n\n<ul>\n    <li><strong>Category:</strong> Cybersecurity / Web3 Bug Bounty</li>\n    <li><strong>Platform:</strong> Immunefi</li>\n    <li><strong>Reward:</strong> Scaled by vulnerability severity (over $125M+ total paid out across programs)</li>\n    <li><strong>Deadline:</strong> See original listing</li>\n    <li><strong>Cost to participate:</strong> See original listing</li>\n    <li><strong>Eligibility:</strong> Independent security researchers and whitehat hackers</li>\n</ul>\n\n<h3>How to Participate</h3>\n<ol>\n    <li>Join the Immunefi platform and explore available bug bounty listings across Web3 protocols.</li>\n    <li>Review the defined scope, assets, and reward terms for your chosen protocol.</li>\n    <li>Analyze in-scope assets, construct a proof of concept, and submit a detailed report with impact analysis for validation.</li>\n</ol>\n<p><a href=\"https://immunefi.com/bug-bounty-program/\" target=\"_blank\" rel=\"noopener noreferrer\" style=\"color:#1565c0;text-decoration:underline;\"><strong>🔗 Open Original Opportunity →</strong></a></p>",
+    "image": "",
+    "video": "",
+    "date": "2026-09-23",
+    "updatedAt": "2026-09-23T08:05:53.918Z"
+  },
+  {
     "id": "post-1790122680432-59xujt",
     "title": "SSV Network Bug Bounty Program",
     "content": "<p>SSV Network operates a bug bounty program via Immunefi, offering rewards for identifying vulnerabilities in its decentralized validator technology infrastructure. Security researchers can earn payouts for discovering eligible smart contract security issues.</p>\n\n<h3>Details</h3>\n<ul>\n  <li><strong>Category:</strong> Smart Contract</li>\n  <li><strong>Platform:</strong> Immunefi</li>\n  <li><strong>Reward:</strong> Up to $250,000 (denominated in USD, paid in SSV)</li>\n  <li><strong>Deadline:</strong> Ongoing</li>\n  <li><strong>Cost to participate:</strong> Free</li>\n  <li><strong>Eligibility:</strong> Open to all security researchers (KYC required for reward payout)</li>\n</ul>\n\n<h3>How to Participate</h3>\n<ol>\n  <li>Review the protocol scope, known issues, and vulnerability disclosure guidelines on Immunefi.</li>\n  <li>Investigate the smart contracts and prepare a functional Proof of Concept (PoC) for any discovered bug.</li>\n  <li>Submit your detailed report directly through the Immunefi platform.</li>\n</ol>\n\n<p><a href=\"https://immunefi.com/bug-bounty/ssvnetwork/information/\" target=\"_blank\" rel=\"noopener noreferrer\">Open Original Opportunity</a></p>",
