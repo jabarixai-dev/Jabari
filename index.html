@@ -415,10 +415,6 @@
 
   /* ================= BLOG ================= */
   .blog-list{display:flex;flex-direction:column;gap:14px;}
-  .blog-filters{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 18px;}
-  .blog-filter.active{font-weight:700;box-shadow:inset 0 -2px 0 currentColor;}
-  .blog-ad-mid{margin:28px auto;}
-
   .blog-card{
     padding:18px;border-radius:12px;
     background:var(--surface);border:1px solid var(--hairline);
@@ -603,14 +599,6 @@
       <h2>My Blogs</h2>
       <p>Latest insights and updates from Jabari.</p>
     </div>
-    <div class="blog-filters" id="blog-filters" aria-label="Filter blog articles">
-      <button type="button" class="btn btn-outline blog-filter active" data-blog-filter="all">All</button>
-      <button type="button" class="btn btn-outline blog-filter" data-blog-filter="news">📰 News</button>
-      <button type="button" class="btn btn-outline blog-filter" data-blog-filter="money-making-opportunity">💰 Opportunities</button>
-      <button type="button" class="btn btn-outline blog-filter" data-blog-filter="job-freelance">💼 Jobs</button>
-      <button type="button" class="btn btn-outline blog-filter" data-blog-filter="bounty-competition">🏆 Bounties</button>
-      <button type="button" class="btn btn-outline blog-filter" data-blog-filter="grant">🎓 Grants</button>
-    </div>
     <div class="blog-list" id="blog-list">
       <p class="blog-empty">Loading posts…</p>
     </div>
@@ -684,19 +672,8 @@
       <input type="password" class="plain-input" id="write-passcode" placeholder="Passcode" autocomplete="current-password" />
       <p class="field-label">Title</p>
       <input type="text" class="plain-input" id="write-title" placeholder="Post title" />
-      <p class="field-label">Article Type</p>
-      <select class="plain-input" id="write-type">
-        <option value="news">📰 News</option>
-        <option value="money-making-opportunity">💰 Money-Making Opportunity</option>
-        <option value="job-freelance">💼 Job / Freelance</option>
-        <option value="bounty-competition">🏆 Bounty / Competition</option>
-        <option value="grant">🎓 Grant</option>
-        <option value="testing-research">🧪 Testing / Research</option>
-        <option value="web3-crypto">🌐 Web3 / Crypto</option>
-        <option value="other">📌 Other</option>
-      </select>
-      <p class="field-label">Date &amp; Time</p>
-      <input type="datetime-local" class="plain-input" id="write-date" />
+      <p class="field-label">Date</p>
+      <input type="date" class="plain-input" id="write-date" />
       <p class="field-label">Featured media (optional)</p>
       <input type="file" class="plain-input" id="write-media" accept="image/*,video/*" />
       <p class="write-media-note">Images and videos are automatically compressed to a maximum of 700 KB before upload. Larger files are compressed, not rejected.</p>
@@ -1051,43 +1028,7 @@ function normalizeBlogContent(value){
     if(!value) return '';
     const d = new Date(value);
     if(Number.isNaN(d.getTime())) return value;
-    return d.toLocaleString(undefined, {year:'numeric',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
-  }
-
-  const BLOG_TYPE_LABELS = {
-    news:'📰 News',
-    'money-making-opportunity':'💰 Money-Making Opportunity',
-    'job-freelance':'💼 Job / Freelance',
-    'bounty-competition':'🏆 Bounty / Competition',
-    grant:'🎓 Grant',
-    'testing-research':'🧪 Testing / Research',
-    'web3-crypto':'🌐 Web3 / Crypto',
-    other:'📌 Other',
-    blog:'Blog'
-  };
-
-  function normalizeArticleType(value, title='', content=''){
-    const raw=String(value||'').toLowerCase().trim();
-    if(BLOG_TYPE_LABELS[raw]) return raw;
-    const text=(String(title)+' '+String(content).replace(/<[^>]+>/g,' ')).toLowerCase();
-    if(/\b(bounty|hackathon|competition|contest|prize)\b/.test(text)) return 'bounty-competition';
-    if(/\b(grant|funding|funded|fellowship)\b/.test(text)) return 'grant';
-    if(/\b(freelance|job|hiring|vacancy|position|gig|career)\b/.test(text)) return 'job-freelance';
-    if(/\b(testing|research|study|tester|paid test|research task)\b/.test(text)) return 'testing-research';
-    if(/\b(airdrop|quest|crypto|blockchain|web3|defi|token|wallet)\b/.test(text)) return 'web3-crypto';
-    if(/\b(earn|reward|paid opportunity|money-making|make money|cash)\b/.test(text)) return 'money-making-opportunity';
-    return 'news';
-  }
-
-  function articleTypeLabel(value,title='',content=''){
-    return BLOG_TYPE_LABELS[normalizeArticleType(value,title,content)] || BLOG_TYPE_LABELS.other;
-  }
-
-  function toDateTimeLocalValue(value){
-    const d=value?new Date(value):new Date();
-    if(Number.isNaN(d.getTime())) return '';
-    const local=new Date(d.getTime()-d.getTimezoneOffset()*60000);
-    return local.toISOString().slice(0,16);
+    return d.toLocaleDateString(undefined, {year:'numeric',month:'short',day:'numeric'});
   }
 
   const BLOG_PUBLIC_DATA_URL = 'https://raw.githubusercontent.com/jabarixai-dev/Jabari/main/blog/posts.json';
@@ -1113,7 +1054,7 @@ function normalizeBlogContent(value){
           'post-date': item.date || '',
           updatedAt: item.updatedAt || '',
           slug: item.slug || item.id || '',
-          articleType: normalizeArticleType(item.articleType || item.category, item.title, item.content)
+          articleType: item.articleType || item.category || 'blog'
         },
         updatedAt: item.updatedAt || '',
         created_at: item.updatedAt || item.date || ''
@@ -1137,6 +1078,43 @@ function normalizeBlogContent(value){
     return blogItems;
   }
 
+  function linkifyBlogTextNodes(root){
+    const walker=document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    const nodes=[];
+    let node;
+    while((node=walker.nextNode())){
+      if(node.parentElement && node.parentElement.closest('a')) continue;
+      if(/https?:\/\//i.test(node.nodeValue||'')) nodes.push(node);
+    }
+    nodes.forEach(textNode=>{
+      const text=String(textNode.nodeValue||'');
+      const frag=document.createDocumentFragment();
+      const re=/(https?:\/\/[^\s<]+)/gi;
+      let last=0, match;
+      while((match=re.exec(text))){
+        const raw=match[0];
+        let url=raw;
+        let trailing='';
+        const m=url.match(/[.,!?;:)]*$/);
+        if(m && m[0]){ trailing=m[0]; url=url.slice(0,-trailing.length); }
+        if(match.index>last) frag.appendChild(document.createTextNode(text.slice(last,match.index)));
+        if(url){
+          const a=document.createElement('a');
+          a.href=url;
+          a.target='_blank';
+          a.rel='noopener noreferrer';
+          a.textContent=url;
+          a.className='blog-inline-link';
+          frag.appendChild(a);
+        }
+        if(trailing) frag.appendChild(document.createTextNode(trailing));
+        last=match.index+raw.length;
+      }
+      if(last<text.length) frag.appendChild(document.createTextNode(text.slice(last)));
+      textNode.parentNode.replaceChild(frag,textNode);
+    });
+  }
+
   function sanitizeBlogHtml(html){
     const tpl=document.createElement('template'); tpl.innerHTML=String(html||'');
     tpl.content.querySelectorAll('script,iframe,object,embed,form,style').forEach(n=>n.remove());
@@ -1148,6 +1126,14 @@ function normalizeBlogContent(value){
         else { el.setAttribute('target','_blank'); el.setAttribute('rel','noopener noreferrer'); }
       }
     });
+    linkifyBlogTextNodes(tpl.content);
+    return tpl.innerHTML;
+  }
+
+  function renderPlainBlogContent(value){
+    const tpl=document.createElement('template');
+    tpl.innerHTML=escapeHtml(String(value||'')).replace(/\n/g,'<br>');
+    linkifyBlogTextNodes(tpl.content);
     return tpl.innerHTML;
   }
   function articleUrl(post){
@@ -1156,29 +1142,15 @@ function normalizeBlogContent(value){
   function findBlogPost(slug){
     return blogItems.find(x=>String(x?.data?.slug||x?.id||'')===String(slug));
   }
-  function loadAdsterraInto(container){
-    if(!container || container.dataset.loaded==='1') return;
-    container.dataset.loaded='1';
-    const wrap=document.createElement('div');
-    wrap.className='blog-ad';
-    wrap.setAttribute('aria-label','Advertisement');
-    const config=document.createElement('script');
-    config.textContent="atOptions={key:'90b45ec2391a32195106283680cdfcf6',format:'iframe',height:50,width:320,params:{}};";
-    const loader=document.createElement('script');
-    loader.src='https://www.highrevenueformat.com/90b45ec2391a32195106283680cdfcf6/invoke.js';
-    wrap.append(config,loader);
-    container.replaceWith(wrap);
-  }
-
   async function openBlogArticle(slug){
     try{
       if(!blogItems.length) await fetchBlogPosts();
       const post=findBlogPost(decodeURIComponent(slug));
       if(!post) throw new Error('Article not found');
       const d=post.data||{};
-      document.getElementById('article-type').textContent=articleTypeLabel(d.articleType,d.title,d.content);
+      document.getElementById('article-type').textContent=String(d.articleType||'blog').replace(/[-_]/g,' ').toUpperCase();
       document.getElementById('article-title').textContent=d.title||'Untitled';
-      document.getElementById('article-date').textContent=formatBlogDate(d.publishedAt||post.updatedAt||d['post-date']||post.created_at);
+      document.getElementById('article-date').textContent=formatBlogDate(d['post-date']||post.updatedAt||post.created_at);
       const media=document.getElementById('article-media');
       media.innerHTML=d.image?`<img class="blog-image" src="${escapeHtml(d.image)}" alt="" loading="eager">`:d.video?`<video class="blog-video" src="${escapeHtml(d.video)}" controls preload="metadata"></video>`:'';
       const body = normalizeBlogContent(d.content || '');
@@ -1186,7 +1158,7 @@ function normalizeBlogContent(value){
 document.getElementById('article-content').innerHTML =
   /<(?:p|h2|ul|ol|blockquote)\b/i.test(body)
     ? sanitizeBlogHtml(body)
-    : escapeHtml(body).replace(/\n/g,'<br>');
+    : renderPlainBlogContent(body);
       const url=articleUrl(post);
       document.getElementById('article-share-btn').onclick=async()=>{
         if(navigator.share){try{await navigator.share({title:d.title||'Jabari Article',url});return;}catch(e){}}
@@ -1206,41 +1178,22 @@ document.getElementById('article-content').innerHTML =
     listEl.innerHTML = '';
     blogItems.forEach(item => {
       const d = item.data || {};
-      const date = d.publishedAt || d['post-date'] || item.updatedAt || item.created_at;
+      const date = d['post-date'] || item.created_at;
       const card = document.createElement('article');
       card.className = 'blog-card';
-      card.dataset.articleType = normalizeArticleType(d.articleType,d.title,d.content);
       const image = d.image ? `<img class="blog-image" src="${escapeHtml(d.image)}" alt="" loading="lazy" onerror="this.style.display='none'">` : '';
       const video = d.video ? `<video class="blog-video" src="${escapeHtml(d.video)}" controls preload="metadata"></video>` : '';
       const slug=d.slug||item.id;
       card.innerHTML = `
         ${image}
         ${video}
-        <p class="blog-date">${escapeHtml(articleTypeLabel(d.articleType,d.title,d.content))} · ${escapeHtml(formatBlogDate(date))}</p>
+        <p class="blog-date">${escapeHtml(formatBlogDate(date))}</p>
         <h3 class="blog-title">${escapeHtml(d.title || 'Untitled')}</h3>
         <p class="blog-body">${escapeHtml(normalizeBlogContent(d.content || '').replace(/<[^>]+>/g,'').slice(0,260))}${normalizeBlogContent(d.content || '').replace(/<[^>]+>/g,'').length>260?'…':''}</p>
         <a class="btn btn-outline" href="#blog/${encodeURIComponent(slug)}">Read Article →</a>`;
       listEl.appendChild(card);
     });
   }
-
-  let activeBlogFilter='all';
-  function applyBlogFilter(){
-    document.querySelectorAll('.blog-filter').forEach(btn=>btn.classList.toggle('active',btn.dataset.blogFilter===activeBlogFilter));
-    const list=document.getElementById('blog-list');
-    if(!list) return;
-    [...list.children].forEach(card=>{
-      const type=card.dataset.articleType||'news';
-      card.style.display=(activeBlogFilter==='all'||type===activeBlogFilter)?'':'none';
-    });
-  }
-
-  document.getElementById('blog-filters')?.addEventListener('click',e=>{
-    const btn=e.target.closest('[data-blog-filter]');
-    if(!btn) return;
-    activeBlogFilter=btn.dataset.blogFilter;
-    applyBlogFilter();
-  });
 
   async function loadBlogPosts(){
     const listEl = document.getElementById('blog-list');
@@ -1262,8 +1215,7 @@ document.getElementById('article-content').innerHTML =
   function clearBlogEditor(){
     editingSubmissionId = '';
     document.getElementById('write-title').value = '';
-    document.getElementById('write-date').value = toDateTimeLocalValue(new Date());
-    document.getElementById('write-type').value = 'news';
+    document.getElementById('write-date').value = todayISO();
     document.getElementById('write-image').value = '';
     document.getElementById('write-video').value = '';
       document.getElementById('write-media').value = '';
@@ -1305,7 +1257,7 @@ document.getElementById('article-content').innerHTML =
       row.className = 'admin-post-row';
       row.innerHTML = `
         <strong>${escapeHtml(d.title || 'Untitled')}</strong>
-        <div class="admin-post-meta">${escapeHtml(articleTypeLabel(d.articleType,d.title,d.content) + ' · ' + formatBlogDate(d.publishedAt || d['post-date'] || item.updatedAt || item.created_at))}${d.image ? ' · 🖼️ Image' : ''}${d.video ? ' · 🎥 Video' : ''}</div>
+        <div class="admin-post-meta">${escapeHtml(formatBlogDate(d['post-date'] || item.created_at))}${d.image ? ' · 🖼️ Image' : ''}${d.video ? ' · 🎥 Video' : ''}</div>
         <div class="admin-post-buttons">
           <button type="button" class="btn btn-outline" data-edit-id="${escapeHtml(item.id || '')}">Edit</button>
           <button type="button" class="btn btn-outline" data-delete-id="${escapeHtml(item.id || '')}">Delete</button>
@@ -1341,8 +1293,7 @@ document.getElementById('article-content').innerHTML =
     const d = item.data || {};
     editingSubmissionId = id;
     document.getElementById('write-title').value = d.title || '';
-    document.getElementById('write-date').value = toDateTimeLocalValue(d.publishedAt || d['post-date'] || item.updatedAt || item.created_at);
-    document.getElementById('write-type').value = normalizeArticleType(d.articleType,d.title,d.content);
+    document.getElementById('write-date').value = d['post-date'] || '';
     document.getElementById('write-image').value = d.image || '';
     document.getElementById('write-video').value = d.video || '';
     document.getElementById('write-media').value = '';
@@ -1590,7 +1541,6 @@ preview.innerHTML = d.image
     const title = document.getElementById('write-title').value.trim();
     const content = document.getElementById('write-content').value.trim();
     const date = document.getElementById('write-date').value;
-    const articleType = document.getElementById('write-type').value;
     const msgEl = document.getElementById('write-msg');
     const preview = document.getElementById('write-media-preview');
     const selectedMedia = preview._prepared || null;
@@ -1621,7 +1571,7 @@ preview.innerHTML = d.image
       const res = await fetch('/.netlify/functions/submit-post', {
         method: 'POST',
         headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ passcode, title, content, imageUrl, videoUrl, date, articleType, postId: editingSubmissionId })
+        body: JSON.stringify({ passcode, title, content, imageUrl, videoUrl, date, postId: editingSubmissionId })
       });
       if(res.ok){
         msgEl.textContent = editingSubmissionId ? 'Changes saved.' : 'Post published.';
