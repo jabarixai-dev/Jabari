@@ -14,13 +14,27 @@ exports.handler=async event=>{
     const current=await getPosts();
     const posts=current.posts;
     const id=String(p.postId||p.submissionId||'').trim();
+
+    // Keep a real timestamp even if an older client sends only YYYY-MM-DD.
+    let postDate = String(p.date || '').trim();
+    if(/^\\d{4}-\\d{2}-\\d{2}$/.test(postDate)){
+      const now = new Date();
+      const [year, month, day] = postDate.split('-').map(Number);
+      postDate = new Date(
+        year, month - 1, day,
+        now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds()
+      ).toISOString();
+    }else if(!postDate || Number.isNaN(new Date(postDate).getTime())){
+      postDate = new Date().toISOString();
+    }
+
     const post={
       id:id||`post-${Date.now()}-${Math.random().toString(36).slice(2,8)}`,
       title:String(p.title).trim(),
       content:String(p.content),
       image:String(p.imageUrl||''),
       video:String(p.videoUrl||''),
-      date:String(p.date||new Date().toISOString()),
+      date:postDate,
       updatedAt:new Date().toISOString(),
       articleType:String(p.articleType||'news').trim().toLowerCase()
     };
