@@ -1087,7 +1087,7 @@ function normalizeBlogContent(value){
         // Keep the original publication timestamp from the public posts file.
         // Different versions of the publisher used date/publishedAt, so accept
         // either without changing the stored value.
-        const publicationTime = item.date || item.publishedAt || item.created_at || item.createdAt || '';
+        const publicationTime = item.publishedAt || item.updatedAt || item.date || item.created_at || item.createdAt || '';
         return {
           id: item.id || '',
           data: {
@@ -1096,12 +1096,12 @@ function normalizeBlogContent(value){
             image: item.image || '',
             video: item.video || '',
             'post-date': publicationTime,
-            publishedAt: item.publishedAt || item.date || '',
+            publishedAt: item.publishedAt || item.updatedAt || item.date || '',
             updatedAt: item.updatedAt || '',
             slug: item.slug || item.id || '',
             articleType: item.articleType || item.category || 'blog'
           },
-          publishedAt: item.publishedAt || item.date || '',
+          publishedAt: item.publishedAt || item.updatedAt || item.date || '',
           updatedAt: item.updatedAt || '',
           created_at: item.updatedAt || item.date || ''
         };
