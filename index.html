@@ -1006,7 +1006,12 @@ function normalizeBlogContent(value){
     text = decoded;
   }
 
-  return text;
+  // Some generated long-form posts were saved with an unwanted
+  // "HTML:" label before the actual article. Remove only that
+  // leading wrapper; do not alter genuine "HTML:" text later in an article.
+  text = text.replace(/^\s*(?:HTML\s*:\s*)+/i, '');
+
+  return text.trim();
 }
 
   // ---------------- Blog Manager ----------------
@@ -1015,8 +1020,9 @@ function normalizeBlogContent(value){
 
   function formatBlogDate(value){
     if(!value) return '';
-    const d = new Date(value);
-    if(Number.isNaN(d.getTime())) return value;
+    const raw = String(value).trim();
+    const d = new Date(raw);
+    if(Number.isNaN(d.getTime())) return raw;
     return new Intl.DateTimeFormat('en-GB', {
       timeZone: 'Africa/Lagos',
       year: 'numeric',
@@ -1041,21 +1047,29 @@ function normalizeBlogContent(value){
     if(admin){
       blogItems = data.items || [];
     }else{
-      blogItems = (Array.isArray(data) ? data : []).map(item => ({
-        id: item.id || '',
-        data: {
-          title: item.title || '',
-          content: item.content || '',
-          image: item.image || '',
-          video: item.video || '',
-          'post-date': item.date || '',
+      blogItems = (Array.isArray(data) ? data : []).map(item => {
+        // Keep the original publication timestamp from the public posts file.
+        // Different versions of the publisher used date/publishedAt, so accept
+        // either without changing the stored value.
+        const publicationTime = item.publishedAt || item.date || item.created_at || item.createdAt || '';
+        return {
+          id: item.id || '',
+          data: {
+            title: item.title || '',
+            content: item.content || '',
+            image: item.image || '',
+            video: item.video || '',
+            'post-date': publicationTime,
+            publishedAt: publicationTime,
+            updatedAt: item.updatedAt || '',
+            slug: item.slug || item.id || '',
+            articleType: item.articleType || item.category || 'blog'
+          },
+          publishedAt: publicationTime,
           updatedAt: item.updatedAt || '',
-          slug: item.slug || item.id || '',
-          articleType: item.articleType || item.category || 'blog'
-        },
-        updatedAt: item.updatedAt || '',
-        created_at: item.updatedAt || item.date || ''
-      }));
+          created_at: publicationTime || item.updatedAt || ''
+        };
+      });
     }
     blogItems.sort((a, b) => {
       const ad = a?.data || {};
@@ -1565,10 +1579,25 @@ preview.innerHTML = d.image
         }
       }
 
+      // New posts get the exact publish timestamp. Existing posts keep their
+      // original stored publication timestamp when edited, so editing cannot
+      // silently replace a real time with the date-input's midnight value.
+      const existingPost = editingSubmissionId
+        ? blogItems.find(item => String(item.id || item.data?.id || '') === String(editingSubmissionId))
+        : null;
+      const existingPublicationTime = existingPost?.publishedAt
+        || existingPost?.data?.publishedAt
+        || existingPost?.data?.['post-date']
+        || existingPost?.created_at
+        || '';
+      const savedDate = editingSubmissionId
+        ? (existingPublicationTime || date)
+        : new Date().toISOString();
+
       const res = await fetch('/.netlify/functions/submit-post', {
         method: 'POST',
         headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ passcode, title, content, imageUrl, videoUrl, date, postId: editingSubmissionId })
+        body: JSON.stringify({ passcode, title, content, imageUrl, videoUrl, date: savedDate, postId: editingSubmissionId })
       });
       if(res.ok){
         msgEl.textContent = editingSubmissionId ? 'Changes saved.' : 'Post published.';
