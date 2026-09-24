@@ -639,10 +639,46 @@
       <p id="article-date" class="blog-date"></p>
     </div>
     <div id="article-media"></div>
+    <div class="blog-ad" aria-label="Advertisement">
+  <script>
+    atOptions = {
+      'key' : '90b45ec2391a32195106283680cdfcf6',
+      'format' : 'iframe',
+      'height' : 50,
+      'width' : 320,
+      'params' : {}
+    };
+  </script>
+  <script src="https://www.highrevenueformat.com/90b45ec2391a32195106283680cdfcf6/invoke.js"></script>
+    </div>
     <article class="blog-article-body" id="article-content"></article>
     <div class="article-share">
       <button type="button" class="btn btn-primary" id="article-share-btn">↗ Share Article</button>
       <button type="button" class="btn btn-outline" id="article-copy-btn">Copy Link</button>
+    </div>
+    <div class="blog-ad" aria-label="Advertisement">
+  <script>
+    atOptions = {
+      'key' : '90b45ec2391a32195106283680cdfcf6',
+      'format' : 'iframe',
+      'height' : 50,
+      'width' : 320,
+      'params' : {}
+    };
+  </script>
+  <script src="https://www.highrevenueformat.com/90b45ec2391a32195106283680cdfcf6/invoke.js"></script>
+    </div>
+    <div class="blog-ad" aria-label="Advertisement">
+  <script>
+    atOptions = {
+      'key' : '90b45ec2391a32195106283680cdfcf6',
+      'format' : 'iframe',
+      'height' : 50,
+      'width' : 320,
+      'params' : {}
+    };
+  </script>
+  <script src="https://www.highrevenueformat.com/90b45ec2391a32195106283680cdfcf6/invoke.js"></script>
     </div>
     <footer class="foot">JABARI · Website Designer · Graphics Designer · Computer Scientist</footer>
   </section>
@@ -1051,7 +1087,7 @@ function normalizeBlogContent(value){
         // Keep the original publication timestamp from the public posts file.
         // Different versions of the publisher used date/publishedAt, so accept
         // either without changing the stored value.
-        const publicationTime = item.publishedAt || item.date || item.created_at || item.createdAt || '';
+        const publicationTime = item.date || item.publishedAt || item.created_at || item.createdAt || '';
         return {
           id: item.id || '',
           data: {
@@ -1060,14 +1096,14 @@ function normalizeBlogContent(value){
             image: item.image || '',
             video: item.video || '',
             'post-date': publicationTime,
-            publishedAt: publicationTime,
+            publishedAt: item.publishedAt || item.date || '',
             updatedAt: item.updatedAt || '',
             slug: item.slug || item.id || '',
             articleType: item.articleType || item.category || 'blog'
           },
-          publishedAt: publicationTime,
+          publishedAt: item.publishedAt || item.date || '',
           updatedAt: item.updatedAt || '',
-          created_at: publicationTime || item.updatedAt || ''
+          created_at: item.updatedAt || item.date || ''
         };
       });
     }
