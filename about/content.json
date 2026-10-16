@@ -1,17 +1,17 @@
 {
-  "bio": "I'm Jabari. I create professional digital experiences through website design, graphics design and technology, helping businesses, organizations and individuals present their work clearly and professionally.",
+  "bio": "A Little About Me\n\nI'm a curious person who enjoys creating things, learning how things work, and finding ways to turn ideas into something useful.\n\nMy journey so far has been about exploring different sides of the digital world, from graphic design and website development to content creation, writing, and automation. What interests me most is not just learning how to use these tools, but understanding how to use them to solve problems, communicate ideas, and create something meaningful.\n\nI'm still growing, still experimenting, and still figuring out how far I can take my abilities. I don't believe I need to have everything figured out before I start building. I'd rather learn by doing, make mistakes, improve, and keep moving forward.\n\nBeyond the digital space, I'm interested in business, entrepreneurship, and the process of building something from the ground up. I want to understand not only how to create things, but also how ideas become valuable, how businesses grow, and how consistent effort can turn a small beginning into something bigger.\n\nThis portfolio is a reflection of that journey. It's a place to document what I'm learning, showcase what I'm creating, and share the ideas I'm exploring along the way.\n\nI'm not presenting myself as someone who knows it all. I'm presenting myself as someone who is willing to learn, willing to work, and serious about becoming better at what I do.\n\nI'm here to build, to learn, and to see what I can turn my potential into. This is just the beginning.",
   "services": [
     {
-      "title": "Website Design",
-      "description": "Professional, responsive websites for businesses, schools, organizations, portfolios and personal brands."
+      "title": "Graphic Design & Visual Branding",
+      "description": "Creating compelling visuals that communicate ideas, build brand identity, and capture attention across digital platforms.\n\nGraphic design · Brand identity · Social media creatives"
     },
     {
-      "title": "Graphics Design",
-      "description": "Visual identities, promotional materials, social media graphics and product designs that help brands communicate clearly."
+      "title": "Website Design & Digital Experiences",
+      "description": "Building clean, functional, and user-friendly websites that bring ideas to life and help businesses establish their online presence."
     },
     {
-      "title": "Computer Scientist",
-      "description": "Technology-driven solutions, software concepts and AI-assisted digital projects."
+      "title": "Content, Writing & Automation",
+      "description": "Combining clear communication and practical technology to create useful content, simplify repetitive tasks, and improve digital workflows.\nContent creation · Copywriting · Workflow automation"
     }
   ]
 }
