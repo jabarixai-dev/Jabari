@@ -1,0 +1,149 @@
+# ---------------------------------------------------------------
+# Admin panel settings (Decap CMS). Open https://YOUR-SITE/admin
+# ---------------------------------------------------------------
+
+backend:
+  name: github
+  repo: YOUR-GITHUB-USERNAME/YOUR-REPO-NAME   # <-- CHANGE THIS (example: jabari/jabari-site)
+  branch: main                                # <-- change if your branch is "master"
+
+# To test the admin on your own computer without logging in, uncomment
+# the next line and run:  npx decap-server
+# local_backend: true
+
+publish_mode: simple
+media_folder: "uploads"
+public_folder: "/uploads"
+locale: "en"
+
+collections:
+  - name: website
+    label: "My Website"
+    label_singular: "Section"
+    description: "Everything on the site is edited here."
+    files:
+
+      # ------------------------------------------------------------
+      # HOMEPAGE & SETTINGS
+      # ------------------------------------------------------------
+      - name: settings
+        label: "Homepage & Settings"
+        file: "content/settings.json"
+        fields:
+          - { label: "Browser tab title", name: site_title, widget: string, hint: "Shown on the browser tab and in Google" }
+          - { label: "Search description", name: meta_description, widget: text, required: false }
+          - { label: "Top-left logo text", name: brand, widget: string, hint: "Example: JABARI" }
+          - { label: "Big name on the homepage", name: name, widget: string }
+          - { label: "Show the red dot after the names", name: show_dot, widget: boolean, default: true }
+          - { label: "Profile photo", name: profile_image, widget: image, required: false, hint: "Square photo works best" }
+          - label: "Titles under your name"
+            name: roles
+            widget: list
+            hint: "One per line, for example: Website Designer"
+            default: ["Website Designer", "Graphics Designer", "Computer Scientist"]
+          - label: "Scrolling ticker at the top"
+            name: ticker
+            widget: list
+            required: false
+            hint: "Leave empty to hide the ticker"
+            default: ["Computer Scientist", "AI", "Digital Products"]
+          - { label: "Text of the HOME link", name: home_label, widget: string, default: "HOME" }
+          - label: "Social media icons"
+            name: socials
+            widget: list
+            add_to_top: false
+            summary: "{{fields.platform}}: {{fields.url}}"
+            hint: "Add, remove or reorder icons. Change a link by editing its URL."
+            fields:
+              - label: "Platform"
+                name: platform
+                widget: select
+                default: "whatsapp"
+                options:
+                  - { label: "WhatsApp", value: "whatsapp" }
+                  - { label: "X (Twitter)", value: "x" }
+                  - { label: "Telegram", value: "telegram" }
+                  - { label: "YouTube", value: "youtube" }
+                  - { label: "Instagram", value: "instagram" }
+                  - { label: "Facebook", value: "facebook" }
+                  - { label: "LinkedIn", value: "linkedin" }
+                  - { label: "Email", value: "email" }
+                  - { label: "Other (generic link icon)", value: "link" }
+              - { label: "Link", name: url, widget: string, hint: "WhatsApp: https://wa.me/2348012345678   Email: mailto:you@example.com" }
+          - label: "Big buttons on the homepage"
+            name: buttons
+            widget: list
+            summary: "{{fields.label}} → {{fields.url}}"
+            hint: "Add, remove or reorder buttons. The gold one is the highlighted button."
+            fields:
+              - { label: "Button text", name: label, widget: string }
+              - { label: "Goes to", name: url, widget: string, hint: "Use reviews.html or shop.html for those pages, or any full link like https://..." }
+              - { label: "Highlight in gold", name: highlight, widget: boolean, default: false }
+          - label: "Footer words"
+            name: footer
+            widget: list
+            required: false
+            default: ["Africa", "AI", "Markets", "Culture", "Truth"]
+          - label: "Colours"
+            name: theme
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "Page background", name: background, widget: color, default: "#0a0a0a" }
+              - { label: "Cards and buttons", name: card, widget: color, default: "#14110a" }
+              - { label: "Borders", name: border, widget: color, default: "#3a2f12" }
+              - { label: "Gold / main accent", name: gold, widget: color, default: "#d4af37" }
+              - { label: "Main text", name: text, widget: color, default: "#f3ead7" }
+              - { label: "Red dot", name: accent, widget: color, default: "#d62839" }
+
+      # ------------------------------------------------------------
+      # SHOP
+      # ------------------------------------------------------------
+      - name: products
+        label: "Shop"
+        file: "content/products.json"
+        fields:
+          - { label: "Page title", name: page_title, widget: string, default: "Shop" }
+          - { label: "Intro text", name: intro, widget: text, required: false }
+          - label: "Products"
+            name: items
+            widget: list
+            add_to_top: true
+            summary: "{{fields.title}}  ₦{{fields.price_ngn}}"
+            hint: "Use 'Add product' to create one. Use the X button on a product to remove it."
+            fields:
+              - { label: "Product ID", name: id, widget: string, pattern: ['^[a-z0-9-]+$', "Lowercase letters, numbers and dashes only"], hint: "A short code for this product, e.g. logo-pack. It becomes the product's own link: https://YOUR-SITE/p/logo-pack (use that link in your Facebook reels). Never change it after you start sharing, selling or reviewing it." }
+              - { label: "Product name", name: title, widget: string }
+              - { label: "Price (₦ Naira)", name: price_ngn, widget: number, value_type: int, min: 0, default: 0, hint: "Numbers only, e.g. 25000. Use 0 for a free product." }
+              - { label: "Picture", name: image, widget: image, required: false }
+              - { label: "Description", name: description, widget: text, required: false }
+              - { label: "Small tag on the picture", name: badge, widget: string, required: false, hint: "Example: New, Best seller, 20% off" }
+              - { label: "Button text", name: buy_label, widget: string, default: "Buy now" }
+              - { label: "Button link", name: buy_link, widget: string, required: false, hint: "Payment or order link. Leave empty to open your WhatsApp with the product name filled in." }
+              - { label: "Available", name: available, widget: boolean, default: true, hint: "Switch off to show 'Sold out'" }
+              - { label: "Hide from the shop", name: hidden, widget: boolean, default: false, hint: "Keeps the product saved but not visible" }
+
+      # ------------------------------------------------------------
+      # REVIEWS
+      # ------------------------------------------------------------
+      - name: reviews
+        label: "Reviews"
+        file: "content/reviews.json"
+        fields:
+          - { label: "Page title", name: page_title, widget: string, default: "Reviews" }
+          - { label: "Intro text", name: intro, widget: text, required: false }
+          - { label: "Let visitors send a review", name: show_form, widget: boolean, default: true, hint: "Their messages arrive in your Netlify dashboard under Forms. Approve one by adding it below." }
+          - label: "Reviews"
+            name: items
+            widget: list
+            add_to_top: true
+            summary: "{{fields.name}}: {{fields.rating}} stars"
+            hint: "Only add reviews that real clients actually gave you."
+            fields:
+              - { label: "Product reviewed", name: product, widget: relation, collection: website, file: products, search_fields: ["items.*.title"], value_field: "items.*.id", display_fields: ["items.*.title"], required: false, hint: "Pick the product from your shop" }
+              - { label: "Client name", name: name, widget: string }
+              - { label: "Role / company", name: role, widget: string, required: false }
+              - { label: "Stars", name: rating, widget: number, value_type: int, min: 1, max: 5, default: 5 }
+              - { label: "Review", name: text, widget: text }
+              - { label: "Date", name: date, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: false }
+              - { label: "Show on the site", name: visible, widget: boolean, default: true, hint: "Switch off to hide without deleting" }
