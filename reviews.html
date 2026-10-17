@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reviews</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body class="wide" data-page="reviews">
+
+  <div class="ticker mono" id="ticker" aria-hidden="true">
+    <div class="ticker-track" id="ticker-track"></div>
+  </div>
+
+  <header>
+    <a class="logo" id="logo" href="index.html">JABARI<i>.</i></a>
+    <a class="home mono" id="home-link" href="index.html">HOME</a>
+  </header>
+
+  <main>
+    <div class="page-head">
+      <h1 id="page-title">Reviews</h1>
+      <p id="page-intro" hidden></p>
+    </div>
+
+    <div class="filter" id="filter-wrap" hidden>
+      <label for="filter" class="mono">PRODUCT</label>
+      <select id="filter"><option value="">All products</option></select>
+    </div>
+
+    <div class="summary" id="summary" hidden></div>
+    <section class="grid" id="grid" hidden></section>
+    <p class="empty" id="empty" hidden>No reviews yet. Be the first to leave one below.</p>
+    <p id="load-error" class="empty" hidden></p>
+
+    <!-- Visitor review form. Netlify Forms collects submissions (Netlify dashboard → Forms).
+         You approve a review by adding it in /admin → Reviews. -->
+    <section class="form-wrap" id="review-form-wrap" hidden>
+      <h2>Leave a review</h2>
+      <p class="notice" id="sent-notice" hidden>Thank you! Your review was sent and will appear once approved.</p>
+      <form class="review-form" name="review" method="POST" action="reviews.html?sent=1" data-netlify="true" netlify-honeypot="bot-field">
+        <input type="hidden" name="form-name" value="review">
+        <p class="hp"><label>Don't fill this out: <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
+        <input type="text" name="name" placeholder="Your name" required maxlength="80">
+        <input type="text" name="role" placeholder="Role / company (optional)" maxlength="80">
+        <select name="product" id="product-select" aria-label="Product you are reviewing" required>
+          <option value="">Which product are you reviewing?</option>
+        </select>
+        <select name="rating" aria-label="Rating">
+          <option value="5">★★★★★ — Excellent</option>
+          <option value="4">★★★★ — Good</option>
+          <option value="3">★★★ — Okay</option>
+          <option value="2">★★ — Poor</option>
+          <option value="1">★ — Bad</option>
+        </select>
+        <textarea name="message" placeholder="Write your review" required maxlength="1500"></textarea>
+        <button type="submit">Send review</button>
+      </form>
+    </section>
+
+    <noscript><p class="empty">Please enable JavaScript to view this page.</p></noscript>
+  </main>
+
+  <footer class="mono" id="footer"></footer>
+
+  <script src="assets/app.js"></script>
+</body>
+</html>

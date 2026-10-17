@@ -1,0 +1,14 @@
+[build]
+  command = "node scripts/build.js"
+  publish = "."
+
+# Always fetch fresh content so edits from /admin show up right after a deploy
+[[headers]]
+  for = "/content/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/admin/*"
+  [headers.values]
+    X-Robots-Tag = "noindex"
