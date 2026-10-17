@@ -1,0 +1,30 @@
+{
+  "site_title": "Jabari",
+  "meta_description": "Jabari: website designer, graphics designer and computer scientist.",
+  "brand": "JABARI",
+  "name": "JABARI",
+  "show_dot": true,
+  "profile_image": "/uploads/profile.jpg",
+  "roles": ["Website Designer", "Graphics Designer", "Computer Scientist"],
+  "ticker": ["Computer Scientist", "AI", "Digital Products"],
+  "home_label": "HOME",
+  "socials": [
+    { "platform": "whatsapp", "url": "https://wa.me/YOURNUMBER" },
+    { "platform": "x", "url": "https://x.com/YOURHANDLE" },
+    { "platform": "telegram", "url": "https://t.me/YOURHANDLE" },
+    { "platform": "youtube", "url": "https://youtube.com/@YOURCHANNEL" }
+  ],
+  "buttons": [
+    { "label": "Reviews", "url": "reviews.html", "highlight": true },
+    { "label": "Shop", "url": "shop.html", "highlight": false }
+  ],
+  "footer": ["Africa", "AI", "Markets", "Culture", "Truth"],
+  "theme": {
+    "background": "#0a0a0a",
+    "card": "#14110a",
+    "border": "#3a2f12",
+    "gold": "#d4af37",
+    "text": "#f3ead7",
+    "accent": "#d62839"
+  }
+}

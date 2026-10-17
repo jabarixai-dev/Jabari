@@ -1,1 +1,18 @@
-
+{
+  "page_title": "Shop",
+  "intro": "Digital products and services. Tap a product to get started.",
+  "items": [
+    {
+      "id": "sample-product",
+      "title": "Sample product (edit or delete me)",
+      "price_ngn": 5000,
+      "image": "",
+      "description": "Replace this with your real product description in the admin panel.",
+      "badge": "Sample",
+      "buy_label": "Buy now",
+      "buy_link": "",
+      "available": true,
+      "hidden": false
+    }
+  ]
+}
