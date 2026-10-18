@@ -4,7 +4,7 @@
 
 backend:
   name: github
-  repo: jabarixai-dev/Jabari   # <-- CHANGE THIS (example: jabari/jabari-site)
+  repo: YOUR-GITHUB-USERNAME/YOUR-REPO-NAME   # <-- CHANGE THIS (example: jabari/jabari-site)
   branch: main                                # <-- change if your branch is "master"
 
 # To test the admin on your own computer without logging in, uncomment
@@ -119,7 +119,8 @@ collections:
               - { label: "Description", name: description, widget: text, required: false }
               - { label: "Small tag on the picture", name: badge, widget: string, required: false, hint: "Example: New, Best seller, 20% off" }
               - { label: "Button text", name: buy_label, widget: string, default: "Buy now" }
-              - { label: "Button link", name: buy_link, widget: string, required: false, hint: "Payment or order link. Leave empty to open your WhatsApp with the product name filled in." }
+              - { label: "Download file name", name: file, widget: string, required: false, hint: "The exact file name you uploaded to Supabase Storage (bucket: products), e.g. logo-pack.zip. Buyers get a 7-day link to this file after paying. A product without a file cannot be bought." }
+              - { label: "Custom button link (optional)", name: buy_link, widget: string, required: false, hint: "Leave EMPTY to use the built-in checkout (email, then Paystack). Only fill this to send buyers to another website instead." }
               - { label: "Available", name: available, widget: boolean, default: true, hint: "Switch off to show 'Sold out'" }
               - { label: "Hide from the shop", name: hidden, widget: boolean, default: false, hint: "Keeps the product saved but not visible" }
 
