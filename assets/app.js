@@ -189,6 +189,105 @@
     }
   }
 
+  /* ---------- checkout popup ---------- */
+
+  var checkoutEl = null;
+
+  function closeCheckout() {
+    if (checkoutEl && checkoutEl.parentNode) checkoutEl.parentNode.removeChild(checkoutEl);
+    checkoutEl = null;
+    document.removeEventListener('keydown', onCheckoutKey);
+  }
+  function onCheckoutKey(e) { if (e.key === 'Escape') closeCheckout(); }
+
+  function openCheckout(p) {
+    closeCheckout();
+    var overlay = el('div', 'modal-overlay');
+    var box = el('form', 'modal');
+    box.setAttribute('novalidate', '');
+    box.setAttribute('role', 'dialog');
+    box.setAttribute('aria-modal', 'true');
+
+    var close = el('button', 'modal-close', '×');
+    close.type = 'button';
+    close.setAttribute('aria-label', 'Close');
+    close.addEventListener('click', closeCheckout);
+
+    box.appendChild(close);
+    box.appendChild(el('h2', null, p.title));
+    box.appendChild(el('div', 'price', fmtPrice(p)));
+    box.appendChild(el('p', 'modal-note', 'Enter your email. Your download link will be sent there after payment.'));
+
+    var input = document.createElement('input');
+    input.type = 'email';
+    input.name = 'email';
+    input.placeholder = 'you@example.com';
+    input.autocomplete = 'email';
+    input.required = true;
+    input.maxLength = 120;
+    box.appendChild(input);
+
+    var err = el('p', 'modal-error');
+    err.hidden = true;
+    box.appendChild(err);
+
+    var go = el('button', 'buy', Number(p.price_ngn) === 0 ? 'Get it free' : 'Continue to payment');
+    go.type = 'submit';
+    box.appendChild(go);
+
+    box.appendChild(el('p', 'modal-fine', Number(p.price_ngn) === 0
+      ? 'We will email you the link.'
+      : 'Secure payment by Paystack. Card, bank transfer and USSD supported.'));
+
+    box.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var email = input.value.trim();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+        err.textContent = 'Please enter a valid email address.';
+        err.hidden = false;
+        input.focus();
+        return;
+      }
+      err.hidden = true;
+      go.disabled = true;
+      var label = go.textContent;
+      go.textContent = 'Please wait…';
+      fetch('/.netlify/functions/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ product_id: p.id, email: email })
+      }).then(function (r) {
+        return r.json().catch(function () { return {}; }).then(function (d) { return { ok: r.ok, d: d }; });
+      }).then(function (res) {
+        if (res.ok && res.d.url) { window.location.href = res.d.url; return; }
+        throw new Error((res.d && res.d.error) || 'Could not start checkout. Please try again.');
+      }).catch(function (e2) {
+        err.textContent = e2.message || 'Could not start checkout. Please try again.';
+        err.hidden = false;
+        go.disabled = false;
+        go.textContent = label;
+      });
+    });
+
+    overlay.addEventListener('click', function (e) { if (e.target === overlay) closeCheckout(); });
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+    checkoutEl = overlay;
+    document.addEventListener('keydown', onCheckoutKey);
+    setTimeout(function () { input.focus(); }, 30);
+  }
+
+  // An optional "Button link" on a product still wins; otherwise the button starts checkout.
+  function wireBuy(a, p) {
+    if (p.buy_link) { link(a, p.buy_link); return; }
+    a.setAttribute('href', '#');
+    a.addEventListener('click', function (e) {
+      e.preventDefault();
+      if (!p.id) return;
+      openCheckout(p);
+    });
+  }
+
   /* ---------- shop ---------- */
 
   function fmtPrice(p) {
@@ -284,7 +383,7 @@
       if (p.description) body.appendChild(el('p', 'desc', p.description));
       var available = p.available !== false;
       var buy = el('a', 'buy' + (available ? '' : ' off'), available ? (p.buy_label || 'Buy now') : 'Sold out');
-      if (available) link(buy, p.buy_link || whatsappFor(s, p.title));
+      if (available) wireBuy(buy, p);
       body.appendChild(buy);
       card.appendChild(body);
       grid.appendChild(card);
@@ -457,7 +556,7 @@
     var buy = byId('p-buy');
     buy.textContent = available ? (p.buy_label || 'Buy now') : 'Sold out';
     buy.className = 'buy' + (available ? '' : ' off');
-    if (available) link(buy, p.buy_link || whatsappFor(s, p.title));
+    if (available) wireBuy(buy, p);
 
     var share = byId('p-share');
     share.addEventListener('click', function () {
