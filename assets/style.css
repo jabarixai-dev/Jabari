@@ -242,27 +242,74 @@ form.review-form{display:flex;flex-direction:column;gap:14px}
 }
 .hp{position:absolute;left:-9999px}
 
-/* phones */
-@media (max-width:520px){
-  header{padding:22px 40px 0}
-  .logo{font-size:26px}
-  main{padding:44px 40px 36px}
-  .avatar{width:232px;height:232px}
-  .name{font-size:62px}
-  .roles{font-size:19px}
-  .socials{gap:26px;margin-top:52px}
-  .page-head h1{font-size:38px}
-}
-@media (max-width:420px){
-  header,main{padding-left:20px;padding-right:20px}
-  .avatar{width:min(232px,64vw);height:min(232px,64vw)}
-  .name{font-size:clamp(46px,14vw,62px)}
-  .roles{font-size:clamp(14px,4vw,19px)}
-  .socials{gap:12px;flex-wrap:nowrap}
-  .socials a{width:auto;height:auto;flex:1 1 0;min-width:0;max-width:104px;aspect-ratio:1}
-  .socials svg{width:34px;height:34px}
-  .links{gap:16px;margin-top:56px}
-  .btn{height:84px;font-size:24px;border-radius:18px}
-  footer{font-size:12px}
-  .grid{grid-template-columns:1fr}
+/* phones: sized to match the reference design (a phone screen is ~360 CSS px wide) */
+@media (max-width:600px){
+  header{padding:16px 20px 0}
+  .logo{font-size:20px}
+  .home{font-size:11px}
+  .ticker{padding:9px 0}
+  .ticker span{font-size:10px;margin:0 14px}
+  .ticker .dot{margin:0 3px}
+  main{padding:28px 20px 28px}
+
+  .avatar{width:120px;height:120px;padding:3px}
+  .avatar img,.avatar .fallback{border-width:2px}
+  .avatar .fallback{font-size:48px}
+  .name{font-size:36px;margin-top:18px}
+  .roles{font-size:11px;letter-spacing:.16em;margin-top:10px;line-height:1.5}
+
+  .socials{gap:12px;margin-top:28px;flex-wrap:wrap}
+  .socials a{width:52px;height:52px;flex:none;max-width:none;aspect-ratio:auto}
+  .socials svg{width:22px;height:22px}
+
+  .links{gap:12px;margin-top:36px}
+  .btn{height:56px;font-size:17px;border-radius:14px}
+
+  footer{font-size:10px;padding:14px 12px;letter-spacing:.14em}
+
+  .page-head{margin-bottom:24px}
+  .page-head h1{font-size:28px}
+  .page-head p{font-size:15px;margin-top:10px}
+  .empty{font-size:15px;padding:28px 16px}
+
+  .grid{grid-template-columns:1fr;gap:14px}
+  .card{border-radius:16px}
+  .card .body{padding:14px;gap:8px}
+  .card h3{font-size:18px}
+  .card .price{font-size:17px}
+  .card .desc{font-size:14px}
+  .badge{font-size:10px;padding:4px 8px;top:10px;left:10px}
+  .buy{height:44px;font-size:15px;border-radius:12px}
+  .rate{font-size:13px}
+
+  .product{gap:18px;margin-bottom:36px}
+  .p-info{gap:12px}
+  .p-info h1{font-size:24px}
+  .p-info .price{font-size:20px}
+  .p-info .desc{font-size:15px}
+  .p-info .buy{height:48px;font-size:17px;border-radius:14px}
+  .share{height:44px;font-size:15px;border-radius:12px}
+  .section-title{font-size:22px;margin-bottom:14px}
+  .summary{font-size:17px;margin-bottom:16px}
+  .stars{font-size:16px}
+  .review .text{font-size:15px}
+  .review .who,.review .who b{font-size:14px}
+  .filter{margin-bottom:16px}
+  .filter select{font-size:14px;padding:8px 10px}
+
+  .form-wrap{margin-top:32px}
+  .form-wrap h2{font-size:22px;margin-bottom:12px}
+  .review-form input,.review-form select,.review-form textarea{font-size:16px;padding:12px 14px;border-radius:12px}
+  .review-form textarea{min-height:100px}
+  .review-form button{height:46px;font-size:16px;border-radius:12px}
+
+  .modal{padding:22px 18px 18px;border-radius:18px;gap:12px}
+  .modal h2{font-size:20px}
+  .modal .price{font-size:20px}
+  .modal-note{font-size:14px}
+  .modal .buy{height:48px;font-size:16px}
+
+  .thanks{margin-top:16px}
+  .thanks h1{font-size:28px}
+  .thanks p{font-size:15px}
 }
