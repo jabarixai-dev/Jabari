@@ -4,7 +4,7 @@
 
 backend:
   name: github
-  repo: YOUR-GITHUB-USERNAME/YOUR-REPO-NAME   # <-- CHANGE THIS (example: jabari/jabari-site)
+  repo: jabarixai-dev/Jabari   # <-- CHANGE THIS (example: jabari/jabari-site)
   branch: main                                # <-- change if your branch is "master"
 
 # To test the admin on your own computer without logging in, uncomment
