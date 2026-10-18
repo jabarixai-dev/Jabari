@@ -60,9 +60,58 @@ each deploy by `scripts/build.js` (Netlify runs it through `netlify.toml`), so a
 works about a minute after you save it. Facebook often doesn't make links in reel captions tappable,
 so paste the link in a pinned comment or your Page's website/button field as well.
 
-**Buy buttons:** paste a payment or order link into a product's *Button link*. If left empty,
-the button opens your WhatsApp with the product name filled in (uses the WhatsApp link in
-Social media icons).
+## Payments (Paystack) and download delivery
+
+How it works: **Buy** opens a popup asking for the buyer's email, with a **Continue to payment**
+button. They pay on Paystack. When Paystack confirms the payment, the site emails them a private
+download link from your own Gmail address. The link **expires after 7 days**, and their email is
+saved for future product announcements. Prices are always read on the server, so nobody can change
+what they pay from their browser.
+
+### Setup (once)
+
+**1. Supabase (database + private file storage)**
+1. Create a free project at supabase.com.
+2. Open **SQL Editor → New query**, paste everything from `supabase/schema.sql`, and run it.
+   This creates the `orders` and `subscribers` tables and a **private** storage bucket called `products`.
+3. Open **Storage → products** and upload your product files (zip, pdf, etc.).
+4. From **Project Settings → API** copy the **Project URL** and the **service_role** key.
+   The service_role key is a secret: put it only in Netlify, never in GitHub or in a chat.
+
+**2. Paystack**
+1. Create an account at paystack.com and, in **Settings → API Keys & Webhooks**, copy the
+   **Secret key**. Start with the **test** key (`sk_test_...`) and switch to live later.
+2. In the same page set **Webhook URL** to `https://YOUR-SITE.netlify.app/.netlify/functions/paystack-webhook`.
+
+**3. Gmail (sends the download link from your address)**
+1. Turn on **2-Step Verification** for your Google account.
+2. Create an **App Password** (Google Account → Security → App passwords). Google shows a 16-character
+   password once. This is not your normal password, and the bot can't read your inbox with it; it only sends mail.
+
+**4. Netlify environment variables** (Site configuration → Environment variables)
+
+| Name | Value |
+|---|---|
+| `PAYSTACK_SECRET_KEY` | Paystack secret key |
+| `SUPABASE_URL` | Supabase Project URL |
+| `SUPABASE_SERVICE_KEY` | Supabase service_role key |
+| `GMAIL_USER` | your Gmail address |
+| `GMAIL_APP_PASSWORD` | the 16-character App Password |
+| `SITE_URL` | your site address, e.g. `https://jabari-tech.netlify.app` |
+
+Redeploy after adding them (Deploys → Trigger deploy).
+
+**5. Set up each product in the admin**
+In **Admin → Shop**, give the product a **Price (₦)** and a **Download file name** that exactly
+matches the file you uploaded to the Supabase `products` bucket. A product with no file name can't be
+bought. Leave **Custom button link** empty, so the built-in checkout is used. Price 0 makes a free
+product that is emailed after the buyer enters an email.
+
+**Test before going live:** with the Paystack **test** key, buy a product using Paystack's test card
+and check that the email arrives and the link downloads the file.
+
+Gmail allows roughly 500 emails a day, and some messages may land in spam. Later you can switch to a
+custom-domain sender without changing the rest.
 
 ## Test the admin on your computer (optional)
 Uncomment `local_backend: true` in `admin/config.yml`, then run `npx decap-server` in the
@@ -73,5 +122,8 @@ before deploying.
 - `index.html`, `shop.html`, `reviews.html`: the pages
 - `assets/`: styling and the script that builds pages from the content files
 - `content/*.json`: your content, edited by the admin
+- `netlify/functions/`: checkout and payment-confirmation code (Paystack, Supabase, Gmail)
+- `supabase/schema.sql`: database tables, run once in Supabase
+- `thanks.html`: page shown after paying
 - `admin/`: the admin panel
 - `uploads/`: pictures you upload

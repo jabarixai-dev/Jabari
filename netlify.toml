@@ -2,6 +2,10 @@
   command = "node scripts/build.js"
   publish = "."
 
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
 # Always fetch fresh content so edits from /admin show up right after a deploy
 [[headers]]
   for = "/content/*"
