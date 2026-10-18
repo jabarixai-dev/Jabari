@@ -2,6 +2,10 @@
   command = "node scripts/build.js"
   publish = "."
 
+[build.environment]
+  # Your site address and Supabase URL are public, not secret. Real keys stay protected.
+  SECRETS_SCAN_OMIT_KEYS = "SITE_URL,SUPABASE_URL"
+
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
