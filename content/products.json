@@ -12,7 +12,8 @@
       "buy_label": "Buy now",
       "buy_link": "",
       "available": true,
-      "hidden": false
+      "hidden": false,
+      "file": "sample-product.zip"
     }
   ]
 }
