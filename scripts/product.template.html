@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{PAGE_TITLE}}</title>
+<meta name="description" content="{{DESC_META}}">
+{{CANONICAL}}
+<meta property="og:type" content="product">
+<meta property="og:site_name" content="{{BRAND}}">
+<meta property="og:title" content="{{TITLE}}">
+<meta property="og:description" content="{{DESC_META}}">
+{{OG_URL}}
+{{OG_IMAGE}}
+{{OG_PRICE}}
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="/assets/style.css">
+</head>
+<body class="wide" data-page="product" data-product-id="{{ID}}">
+
+  <div class="ticker mono" id="ticker" aria-hidden="true">
+    <div class="ticker-track" id="ticker-track"></div>
+  </div>
+
+  <header>
+    <a class="logo" id="logo" href="/">{{BRAND}}<i>.</i></a>
+    <a class="home mono" id="home-link" href="/">HOME</a>
+  </header>
+
+  <main>
+    <article class="product" id="product">
+      <div class="p-image-wrap" id="p-image-wrap"{{WRAP_HIDDEN}}>
+        {{IMG}}
+        <span class="badge" id="p-badge"{{BADGE_HIDDEN}}>{{BADGE}}</span>
+      </div>
+      <div class="p-info">
+        <h1 id="p-title">{{TITLE}}</h1>
+        <div class="price" id="p-price">{{PRICE}}</div>
+        <a class="rate" id="p-rate" href="#reviews" hidden></a>
+        <p class="desc" id="p-desc">{{DESC}}</p>
+        <a class="buy" id="p-buy" href="#">{{BUY_LABEL}}</a>
+        <button class="share" id="p-share" type="button">Share this product</button>
+      </div>
+    </article>
+
+    <p class="empty" id="gone" hidden>This product is no longer available. <a href="/shop.html" style="color:var(--gold)">Back to the shop</a></p>
+
+    <section id="reviews-section">
+      <h2 class="section-title" id="reviews">Reviews</h2>
+      <div class="summary" id="summary" hidden></div>
+      <section class="grid" id="grid" hidden></section>
+      <p class="empty" id="empty" hidden>No reviews for this product yet.</p>
+      <p style="margin-top:24px"><a class="rate" id="write-review" href="/reviews.html?product={{ID}}">Write a review for this product →</a></p>
+    </section>
+
+    <p id="load-error" class="empty" hidden></p>
+  </main>
+
+  <footer class="mono" id="footer"></footer>
+
+  <script src="/assets/app.js"></script>
+</body>
+</html>
